@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import requests
 import streamlit as st
@@ -29,6 +29,7 @@ st.info(
 # =========================
 
 PRIVACY_RULES = {
+
     "تحديد البيانات الشخصية التي يتم جمعها": {
         "patterns": [
             ["البيانات الشخصية"],
@@ -197,6 +198,7 @@ PRIVACY_RULES = {
 # =========================
 
 STORE_RULES = {
+
     "وجود سياسة الخصوصية": {
         "keywords": [
             "سياسة الخصوصية",
@@ -289,7 +291,6 @@ STORE_RULES = {
             "رقم ضريبي",
             "الرقم المميز",
             "ضريبة القيمة المضافة",
-            "ضريبة القيمة المضافة",
             "VAT",
             "VAT number",
             "tax number"
@@ -300,10 +301,11 @@ STORE_RULES = {
 
 
 # =========================
-# أدوات معالجة النص
+# معالجة النص
 # =========================
 
 def normalize_text(text):
+
     if not text:
         return ""
 
@@ -323,105 +325,143 @@ def normalize_text(text):
         text = text.replace(old, new)
 
     text = re.sub(r"\s+", " ", text)
+
     return text.strip()
 
 
 def split_sentences(text):
-    sentences = re.split(r"[.!؟?\n]+", text)
-    return [s.strip() for s in sentences if s.strip()]
+
+    sentences = re.split(
+        r"[.!؟?\n]+",
+        text
+    )
+
+    return [
+        sentence.strip()
+        for sentence in sentences
+        if sentence.strip()
+    ]
 
 
 def find_evidence(text, keywords):
-    """
-    يبحث عن جملة تحتوي على الكلمات ويعيد جزءًا منها كدليل.
-    """
 
-    normalized = normalize_text(text)
+    sentences = split_sentences(text)
 
     for keyword in keywords:
-        k = normalize_text(keyword)
 
-        if k in normalized:
-            sentences = split_sentences(text)
+        normalized_keyword = normalize_text(
+            keyword
+        )
 
-            for sentence in sentences:
-                if k in normalize_text(sentence):
-                    return sentence.strip()
+        for sentence in sentences:
+
+            if normalized_keyword in normalize_text(
+                sentence
+            ):
+
+                return sentence.strip()
 
     return None
 
 
 # =========================
-# محرك فحص الخصوصية
+# تحليل قاعدة الخصوصية
 # =========================
 
 def analyze_rule(text, rule):
+
     normalized_text = normalize_text(text)
+
     sentences = split_sentences(text)
 
     matches = []
+
     evidence = []
 
     for pattern_group in rule["patterns"]:
 
         normalized_patterns = [
-            normalize_text(p)
-            for p in pattern_group
+            normalize_text(pattern)
+            for pattern in pattern_group
         ]
 
         found = False
 
-        # البحث داخل الجملة الواحدة
+        # البحث داخل الجملة
         for sentence in sentences:
-            normalized_sentence = normalize_text(sentence)
+
+            normalized_sentence = normalize_text(
+                sentence
+            )
 
             if all(
                 pattern in normalized_sentence
                 for pattern in normalized_patterns
             ):
+
                 found = True
-                evidence.append(sentence.strip())
+
+                evidence.append(
+                    sentence.strip()
+                )
+
                 break
 
-        # البحث في النص كاملًا
+        # البحث في كامل النص
         if not found:
+
             if all(
                 pattern in normalized_text
                 for pattern in normalized_patterns
             ):
+
                 found = True
 
-                # محاولة استخراج جملة مناسبة
                 for sentence in sentences:
-                    ns = normalize_text(sentence)
+
+                    normalized_sentence = normalize_text(
+                        sentence
+                    )
 
                     if any(
-                        pattern in ns
+                        pattern in normalized_sentence
                         for pattern in normalized_patterns
                     ):
-                        evidence.append(sentence.strip())
+
+                        evidence.append(
+                            sentence.strip()
+                        )
+
                         break
 
         if found:
             matches.append(pattern_group)
 
     total = len(rule["patterns"])
+
     found_count = len(matches)
 
     if found_count == 0:
+
         status = "not_found"
         score = 0
 
-    elif found_count >= max(1, total * 0.5):
+    elif found_count >= max(
+        1,
+        total * 0.5
+    ):
+
         status = "clear"
         score = 100
 
     else:
+
         status = "review"
         score = 60
 
-    # إزالة الأدلة المكررة
-    evidence = list(dict.fromkeys(evidence))
+    evidence = list(
+        dict.fromkeys(evidence)
+    )
 
     return {
         "status": status,
@@ -432,19 +472,25 @@ def analyze_rule(text, rule):
 
 
 def analyze_document(text, rules):
+
     results = {}
 
     for name, rule in rules.items():
-        results[name] = analyze_rule(text, rule)
+
+        results[name] = analyze_rule(
+            text,
+            rule
+        )
 
     return results
 
 
 # =========================
-# حساب الدرجات
+# حساب النتيجة
 # =========================
 
 def calculate_score(results):
+
     if not results:
         return 0
 
@@ -458,18 +504,23 @@ def calculate_score(results):
         elif result["status"] == "review":
             total += 0.5
 
-    return round((total / len(results)) * 100)
+    return round(
+        (total / len(results)) * 100
+    )
 
 
 def risk_level(score):
 
     if score >= 80:
+
         return "🟢 مؤشر أولي جيد"
 
     elif score >= 60:
+
         return "🟡 يحتاج مراجعة"
 
     else:
+
         return "🔴 يحتاج مراجعة موسعة"
 
 
@@ -485,9 +536,9 @@ def get_page(url):
             "User-Agent": (
                 "Mozilla/5.0 "
                 "(Windows NT 10.0; Win64; x64) "
-                AppleWebKit/537.36 "
+                "AppleWebKit/537.36 "
                 "(KHTML, like Gecko) "
-                Chrome/120.0 Safari/537.36"
+                "Chrome/120.0 Safari/537.36"
             )
         }
 
@@ -504,9 +555,10 @@ def get_page(url):
             "html.parser"
         )
 
-        for tag in soup(
+        for tag in soup.find_all(
             ["script", "style", "noscript"]
         ):
+
             tag.decompose()
 
         text = soup.get_text(
@@ -514,11 +566,19 @@ def get_page(url):
             strip=True
         )
 
-        return text, soup, response.url
+        return (
+            text,
+            soup,
+            response.url
+        )
 
-    except Exception as e:
+    except Exception:
 
-        return None, None, str(e)
+        return (
+            None,
+            None,
+            None
+        )
 
 
 # =========================
@@ -532,9 +592,14 @@ def get_links(soup, base_url):
     if not soup:
         return links
 
-    for a in soup.find_all("a", href=True):
+    for a in soup.find_all(
+        "a",
+        href=True
+    ):
 
-        href = a.get("href")
+        href = a.get(
+            "href"
+        )
 
         text = a.get_text(
             " ",
@@ -570,36 +635,46 @@ def find_privacy_page(links):
     for link in links:
 
         combined = normalize_text(
-            link["text"] + " " + link["url"]
+            link["text"]
+            + " "
+            + link["url"]
         )
 
         for word in privacy_words:
 
-            if normalize_text(word) in combined:
+            if normalize_text(
+                word
+            ) in combined:
+
                 return link["url"]
 
     return None
 
 
 # =========================
-# فحص عناصر المتجر
+# تحليل المتجر
 # =========================
 
-def analyze_store(text, links):
+def analyze_store(
+    text,
+    links
+):
 
-    combined_text = normalize_text(text)
+    normalized_text = normalize_text(
+        text
+    )
 
-    # نجمع أسماء الروابط + روابطها
     link_text = " ".join(
         [
-            f"{x['text']} {x['url']}"
-            for x in links
+            f"{item['text']} {item['url']}"
+            for item in links
         ]
     )
 
     searchable_text = (
-        combined_text + " " +
-        normalize_text(link_text)
+        normalized_text
+        + " "
+        + normalize_text(link_text)
     )
 
     results = {}
@@ -610,11 +685,12 @@ def analyze_store(text, links):
 
         for keyword in rule["keywords"]:
 
-            normalized_keyword = normalize_text(keyword)
-
-            if normalized_keyword in searchable_text:
+            if normalize_text(
+                keyword
+            ) in searchable_text:
 
                 found_keyword = keyword
+
                 break
 
         if found_keyword:
@@ -624,13 +700,14 @@ def analyze_store(text, links):
                 [found_keyword]
             )
 
-            # إذا لم تكن في نص الصفحة، نبحث في الروابط
             if not evidence:
 
                 for link in links:
 
                     combined = normalize_text(
-                        link["text"] + " " + link["url"]
+                        link["text"]
+                        + " "
+                        + link["url"]
                     )
 
                     if normalize_text(
@@ -638,8 +715,11 @@ def analyze_store(text, links):
                     ) in combined:
 
                         evidence = (
-                            f"رابط/صفحة مرتبطة: "
-                            f"{link['text'] or link['url']}"
+                            "رابط/صفحة مرتبطة: "
+                            + (
+                                link["text"]
+                                or link["url"]
+                            )
                         )
 
                         break
@@ -686,7 +766,9 @@ mode = st.radio(
 
 if mode == "📄 فحص سياسة الخصوصية":
 
-    st.subheader("📄 فحص سياسة الخصوصية")
+    st.subheader(
+        "📄 فحص سياسة الخصوصية"
+    )
 
     privacy_text = st.text_area(
         "ألصق نص سياسة الخصوصية هنا:",
@@ -734,19 +816,13 @@ if mode == "📄 فحص سياسة الخصوصية":
                         f"🟢 {name}"
                     )
 
-                    if result["evidence"]:
+                    for evidence in result[
+                        "evidence"
+                    ]:
 
                         st.caption(
-                            "الدليل:"
+                            f"الدليل: {evidence}"
                         )
-
-                        for evidence in result[
-                            "evidence"
-                        ]:
-
-                            st.write(
-                                f"“{evidence}”"
-                            )
 
                 elif result["status"] == "review":
 
@@ -754,19 +830,13 @@ if mode == "📄 فحص سياسة الخصوصية":
                         f"🟡 يحتاج مراجعة: {name}"
                     )
 
-                    if result["evidence"]:
+                    for evidence in result[
+                        "evidence"
+                    ]:
 
                         st.caption(
-                            "المؤشر الذي تم العثور عليه:"
+                            f"المؤشر: {evidence}"
                         )
-
-                        for evidence in result[
-                            "evidence"
-                        ]:
-
-                            st.write(
-                                f"“{evidence}”"
-                            )
 
                     st.caption(
                         result["suggestion"]
@@ -786,20 +856,20 @@ if mode == "📄 فحص سياسة الخصوصية":
 
             clear_count = sum(
                 1
-                for r in results.values()
-                if r["status"] == "clear"
+                for result in results.values()
+                if result["status"] == "clear"
             )
 
             review_count = sum(
                 1
-                for r in results.values()
-                if r["status"] == "review"
+                for result in results.values()
+                if result["status"] == "review"
             )
 
             missing_count = sum(
                 1
-                for r in results.values()
-                if r["status"] == "not_found"
+                for result in results.values()
+                if result["status"] == "not_found"
             )
 
             col1, col2, col3 = st.columns(3)
@@ -826,7 +896,9 @@ if mode == "📄 فحص سياسة الخصوصية":
 
 else:
 
-    st.subheader("🛒 فحص رابط المتجر")
+    st.subheader(
+        "🛒 فحص رابط المتجر"
+    )
 
     store_url = st.text_input(
         "أدخل رابط المتجر:",
@@ -847,10 +919,15 @@ else:
         else:
 
             if not store_url.startswith(
-                ("http://", "https://")
+                (
+                    "http://",
+                    "https://"
+                )
             ):
+
                 store_url = (
-                    "https://" + store_url
+                    "https://"
+                    + store_url
                 )
 
             with st.spinner(
@@ -858,7 +935,9 @@ else:
             ):
 
                 page_text, soup, final_url = (
-                    get_page(store_url)
+                    get_page(
+                        store_url
+                    )
                 )
 
             if not page_text:
@@ -873,27 +952,18 @@ else:
                     "تم الوصول إلى المتجر وبدء الفحص."
                 )
 
-                # -------------------------
                 # HTTPS
-                # -------------------------
-
                 https_ok = final_url.startswith(
                     "https://"
                 )
 
-                # -------------------------
                 # الروابط
-                # -------------------------
-
                 links = get_links(
                     soup,
                     final_url
                 )
 
-                # -------------------------
                 # فحص المتجر
-                # -------------------------
-
                 store_results = analyze_store(
                     page_text,
                     links
@@ -903,10 +973,7 @@ else:
                     store_results
                 )
 
-                # -------------------------
-                # البحث عن الخصوصية
-                # -------------------------
-
+                # البحث عن سياسة الخصوصية
                 privacy_url = find_privacy_page(
                     links
                 )
@@ -937,16 +1004,13 @@ else:
                             )
                         )
 
-                # -------------------------
                 # المؤشر العام
-                # -------------------------
-
                 if privacy_results:
 
                     overall_score = round(
                         (
-                            store_score +
-                            privacy_score
+                            store_score
+                            + privacy_score
                         ) / 2
                     )
 
@@ -954,13 +1018,16 @@ else:
 
                     overall_score = store_score
 
+                # المؤشرات
                 st.divider()
 
                 st.subheader(
                     "📊 المؤشرات"
                 )
 
-                col1, col2, col3 = st.columns(3)
+                col1, col2, col3 = st.columns(
+                    3
+                )
 
                 col1.metric(
                     "المؤشر العام",
@@ -987,10 +1054,7 @@ else:
                     )
                 )
 
-                # -------------------------
                 # عناصر المتجر
-                # -------------------------
-
                 st.divider()
 
                 st.subheader(
@@ -1007,15 +1071,13 @@ else:
                             f"🟢 {name}"
                         )
 
-                        if result["evidence"]:
+                        for evidence in result[
+                            "evidence"
+                        ]:
 
-                            for evidence in result[
-                                "evidence"
-                            ]:
-
-                                st.caption(
-                                    f"الدليل: {evidence}"
-                                )
+                            st.caption(
+                                f"الدليل: {evidence}"
+                            )
 
                     else:
 
@@ -1027,10 +1089,7 @@ else:
                             result["suggestion"]
                         )
 
-                # -------------------------
                 # HTTPS
-                # -------------------------
-
                 st.divider()
 
                 st.subheader(
@@ -1049,10 +1108,7 @@ else:
                         "🔴 لم يتم التحقق من استخدام HTTPS."
                     )
 
-                # -------------------------
-                # الخصوصية
-                # -------------------------
-
+                # سياسة الخصوصية
                 st.divider()
 
                 st.subheader(
@@ -1081,15 +1137,13 @@ else:
                                     f"🟢 {name}"
                                 )
 
-                                if result["evidence"]:
+                                for evidence in result[
+                                    "evidence"
+                                ]:
 
-                                    for evidence in result[
-                                        "evidence"
-                                    ]:
-
-                                        st.caption(
-                                            f"الدليل: {evidence}"
-                                        )
+                                    st.caption(
+                                        f"الدليل: {evidence}"
+                                    )
 
                             elif result["status"] == "review":
 
@@ -1097,15 +1151,13 @@ else:
                                     f"🟡 يحتاج مراجعة: {name}"
                                 )
 
-                                if result["evidence"]:
+                                for evidence in result[
+                                    "evidence"
+                                ]:
 
-                                    for evidence in result[
-                                        "evidence"
-                                    ]:
-
-                                        st.caption(
-                                            f"المؤشر: {evidence}"
-                                        )
+                                    st.caption(
+                                        f"المؤشر: {evidence}"
+                                    )
 
                                 st.caption(
                                     result["suggestion"]
@@ -1127,10 +1179,7 @@ else:
                         "🟡 لم يتم العثور تلقائيًا على صفحة واضحة لسياسة الخصوصية."
                     )
 
-                # -------------------------
                 # التحقق الخارجي
-                # -------------------------
-
                 st.divider()
 
                 st.subheader(
