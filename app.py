@@ -102,72 +102,51 @@ st.markdown(
     }
 
     /* ================================
-       التبويبات
-       ================================ */
-
-    button[data-baseweb="tab"] {
-        color: #1f2937 !important;
-        font-weight: 700 !important;
-        background-color: transparent !important;
-    }
-
-    button[data-baseweb="tab"] p {
-        color: #1f2937 !important;
-    }
-
-    button[data-baseweb="tab"] span {
-        color: #1f2937 !important;
-    }
-
-    button[data-baseweb="tab"] div {
-        color: #1f2937 !important;
-    }
-
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #111827 !important;
-        font-weight: 800 !important;
-    }
-
-    button[data-baseweb="tab"][aria-selected="true"] p,
-    button[data-baseweb="tab"][aria-selected="true"] span,
-    button[data-baseweb="tab"][aria-selected="true"] div {
-        color: #111827 !important;
-    }
-
-    /* ================================
-       جميع الأزرار
+       أزرار الفحص
        ================================ */
 
     .stButton > button {
         background-color: #1f2937 !important;
-        color: #ffffff !important;
+        color: white !important;
         border: 1px solid #1f2937 !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
     }
 
-    .stButton > button p {
-        color: #ffffff !important;
-    }
-
-    .stButton > button span {
-        color: #ffffff !important;
-    }
-
+    .stButton > button p,
+    .stButton > button span,
     .stButton > button div {
-        color: #ffffff !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
     }
 
     .stButton > button:hover {
         background-color: #111827 !important;
-        color: #ffffff !important;
-        border-color: #111827 !important;
+        color: white !important;
     }
 
-    .stButton > button:hover p,
-    .stButton > button:hover span,
-    .stButton > button:hover div {
-        color: #ffffff !important;
+    /* ================================
+       تبويبات فحص المتجر والخصوصية
+       ================================ */
+
+    div[data-baseweb="tab-list"] {
+        background: white !important;
+        border-radius: 12px !important;
+    }
+
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"],
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"] * {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"],
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"] * {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        opacity: 1 !important;
     }
 
     .footer-note {
@@ -180,7 +159,7 @@ st.markdown(
 
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
 
@@ -535,21 +514,17 @@ PRIVACY_RULES = [
 
 
 def analyze_privacy(text):
-
     results = []
     sentences = split_sentences(text)
 
     for rule in PRIVACY_RULES:
-
         name = rule["name"]
         patterns = rule["patterns"]
 
         if rule.get("special") == "retention":
-
             evidence = None
 
             for sentence in sentences:
-
                 normalized = normalize_text(sentence)
 
                 has_retention = any(
@@ -591,15 +566,12 @@ def analyze_privacy(text):
                     break
 
             if evidence:
-
                 results.append({
                     "name": name,
                     "status": "🟢",
                     "evidence": evidence,
                 })
-
             else:
-
                 results.append({
                     "name": name,
                     "status": "🔴",
@@ -611,25 +583,21 @@ def analyze_privacy(text):
         matched_sentences = []
 
         for sentence in sentences:
-
             normalized_sentence = normalize_text(sentence)
             matched = []
 
             for pattern in patterns:
-
                 normalized_pattern = normalize_text(pattern)
 
                 if normalized_pattern in normalized_sentence:
                     matched.append(pattern)
 
             if matched:
-
                 matched_sentences.append(
                     (sentence, matched)
                 )
 
         if name == "توضيح طريقة جمع البيانات":
-
             strong_patterns = rule.get(
                 "strong_patterns",
                 []
@@ -638,30 +606,25 @@ def analyze_privacy(text):
             strong_evidence = None
 
             for sentence in sentences:
-
                 if sentence_has_patterns(
                     sentence,
                     strong_patterns
                 ):
-
                     strong_evidence = sentence
                     break
 
             if strong_evidence:
-
                 results.append({
                     "name": name,
                     "status": "🟢",
                     "evidence": strong_evidence,
                 })
-
                 continue
 
         if name == (
             "توضيح الجهات التي قد يتم الإفصاح "
             "لها عن البيانات"
         ):
-
             third_party_only = rule.get(
                 "third_party_only",
                 []
@@ -670,7 +633,6 @@ def analyze_privacy(text):
             only_third_party = False
 
             for sentence in sentences:
-
                 normalized = normalize_text(sentence)
 
                 has_third_party = any(
@@ -708,11 +670,9 @@ def analyze_privacy(text):
                         and has_sharing
                     )
                 ):
-
                     only_third_party = True
 
             if only_third_party:
-
                 results.append({
                     "name": name,
                     "status": "🟡",
@@ -722,30 +682,24 @@ def analyze_privacy(text):
                         else None
                     ),
                 })
-
                 continue
 
         unique_matches = set()
 
         for _, matches in matched_sentences:
-
             for match in matches:
-
                 unique_matches.add(
                     normalize_text(match)
                 )
 
         if matched_sentences:
-
             if len(unique_matches) >= 2:
                 status = "🟢"
             else:
                 status = "🟡"
 
             evidence = matched_sentences[0][0]
-
         else:
-
             status = "🔴"
             evidence = None
 
@@ -848,34 +802,27 @@ STORE_RULES = [
 
 
 def analyze_store(text):
-
     results = []
     sentences = split_sentences(text)
 
     for rule in STORE_RULES:
-
         evidence = None
 
         for sentence in sentences:
-
             if sentence_has_patterns(
                 sentence,
                 rule["patterns"]
             ):
-
                 evidence = sentence
                 break
 
         if evidence:
-
             results.append({
                 "name": rule["name"],
                 "status": "🟢",
                 "evidence": evidence,
             })
-
         else:
-
             results.append({
                 "name": rule["name"],
                 "status": "⚪",
@@ -886,26 +833,19 @@ def analyze_store(text):
 
 
 def fetch_page(url):
-
     try:
-
         response = requests.get(
             url,
             headers=HEADERS,
             timeout=15
         )
-
         response.raise_for_status()
-
         return response.text
-
     except Exception:
-
         return None
 
 
 def extract_page_data(html, base_url):
-
     soup = BeautifulSoup(
         html,
         "html.parser"
@@ -919,7 +859,6 @@ def extract_page_data(html, base_url):
             "svg",
         ]
     ):
-
         tag.decompose()
 
     text = soup.get_text(
@@ -933,7 +872,6 @@ def extract_page_data(html, base_url):
         "a",
         href=True
     ):
-
         label = a.get_text(
             " ",
             strip=True
@@ -953,7 +891,6 @@ def extract_page_data(html, base_url):
 
 
 def find_privacy_page(links):
-
     keywords = [
         "سياسة الخصوصية",
         "سياسه الخصوصيه",
@@ -963,7 +900,6 @@ def find_privacy_page(links):
     ]
 
     for link in links:
-
         label = normalize_text(
             link["label"]
         )
@@ -973,7 +909,6 @@ def find_privacy_page(links):
         )
 
         for keyword in keywords:
-
             normalized_keyword = normalize_text(
                 keyword
             )
@@ -988,7 +923,6 @@ def find_privacy_page(links):
 
 
 def display_result(result):
-
     st.markdown(
         '<div class="result-box">',
         unsafe_allow_html=True
@@ -1000,21 +934,16 @@ def display_result(result):
     )
 
     if result.get("evidence"):
-
         with st.expander(
             "🔎 عرض الدليل"
         ):
-
             st.write(
                 result["evidence"]
             )
-
     else:
-
         with st.expander(
             "🔎 لماذا ظهرت هذه النتيجة؟"
         ):
-
             st.write(
                 "لم يعثر المحرك في النص المتاح "
                 "على مؤشر كافٍ لهذا المتطلب."
@@ -1027,20 +956,16 @@ def display_result(result):
 
 
 def privacy_score(results):
-
     if not results:
         return 0
 
     values = []
 
     for result in results:
-
         if result["status"] == "🟢":
             values.append(1)
-
         elif result["status"] == "🟡":
             values.append(0.5)
-
         else:
             values.append(0)
 
@@ -1052,17 +977,14 @@ def privacy_score(results):
 
 
 def store_score(results):
-
     if not results:
         return 0
 
     values = []
 
     for result in results:
-
         if result["status"] == "🟢":
             values.append(1)
-
         else:
             values.append(0)
 
@@ -1101,7 +1023,6 @@ st.info(
     "نتائج ميثاق مؤشرات فحص أولية وليست "
     "حكمًا قانونيًا أو استشارة قانونية."
 )
-
 
 tab1, tab2 = st.tabs(
     [
@@ -1228,12 +1149,14 @@ with tab1:
                 col1, col2, col3 = st.columns(3)
 
                 with col1:
+
                     st.metric(
                         "المؤشر العام",
                         f"{overall_score}%"
                     )
 
                 with col2:
+
                     st.metric(
                         "فحص المتجر",
                         f"{store_score_value}%"
@@ -1263,7 +1186,10 @@ with tab1:
                 )
 
                 for result in store_results:
-                    display_result(result)
+
+                    display_result(
+                        result
+                    )
 
                 st.divider()
 
@@ -1275,7 +1201,10 @@ with tab1:
                     )
 
                     for result in privacy_results:
-                        display_result(result)
+
+                        display_result(
+                            result
+                        )
 
                 else:
 
@@ -1299,7 +1228,10 @@ with tab1:
                 ]
 
                 for item in external_checks:
-                    st.write(f"🔵 {item}")
+
+                    st.write(
+                        f"🔵 {item}"
+                    )
 
 
 with tab2:
@@ -1358,24 +1290,28 @@ with tab2:
             col1, col2, col3, col4 = st.columns(4)
 
             with col1:
+
                 st.metric(
                     "المؤشر",
                     f"{score}%"
                 )
 
             with col2:
+
                 st.metric(
                     "مؤشرات واضحة",
                     clear_count
                 )
 
             with col3:
+
                 st.metric(
                     "تحتاج مراجعة",
                     review_count
                 )
 
             with col4:
+
                 st.metric(
                     "لم يتم العثور عليها",
                     missing_count
@@ -1384,7 +1320,10 @@ with tab2:
             st.divider()
 
             for result in results:
-                display_result(result)
+
+                display_result(
+                    result
+                )
 
 
 st.markdown(
