@@ -57,7 +57,7 @@ st.markdown("""
     color: #cccccc !important;
     font-size: 16px;
     line-height: 1.8;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .metric-card {
@@ -495,10 +495,6 @@ def analyze_privacy(text):
                     sentence
                 )
 
-        # -------------------------
-        # Retention special logic
-        # -------------------------
-
         if name == "توضيح مدة الاحتفاظ بالبيانات":
 
             retention_found = any(
@@ -541,10 +537,6 @@ def analyze_privacy(text):
             else:
 
                 status = "🔴"
-
-        # -------------------------
-        # Collection special logic
-        # -------------------------
 
         elif name == "توضيح طريقة جمع البيانات":
 
@@ -598,10 +590,6 @@ def analyze_privacy(text):
             else:
 
                 status = "🔴"
-
-        # -------------------------
-        # Disclosure special logic
-        # -------------------------
 
         elif name == "توضيح الجهات التي قد يتم الإفصاح لها عن البيانات":
 
