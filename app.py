@@ -32,7 +32,6 @@ st.markdown(
     .main-title {
         text-align: center;
         padding: 20px 0 5px 0;
-        color: #1f2937 !important;
     }
 
     .main-title h1 {
@@ -101,9 +100,7 @@ st.markdown(
         color: #1f2937 !important;
     }
 
-    /* ================================
-       أزرار الفحص
-       ================================ */
+    /* أزرار الفحص */
 
     .stButton > button {
         background-color: #1f2937 !important;
@@ -125,28 +122,29 @@ st.markdown(
         color: white !important;
     }
 
-    /* ================================
-       تبويبات فحص المتجر والخصوصية
-       ================================ */
+    /* الخانتان العلويتان */
 
-    div[data-baseweb="tab-list"] {
-        background: white !important;
-        border-radius: 12px !important;
+    .tab-header {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0 25px 0;
     }
 
-    div[data-baseweb="tab-list"] button[data-baseweb="tab"],
-    div[data-baseweb="tab-list"] button[data-baseweb="tab"] * {
+    .tab-title {
+        background: white;
+        border: 1px solid #d9dde5;
+        border-radius: 12px;
+        padding: 15px 20px;
+        text-align: center;
         color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        opacity: 1 !important;
-        visibility: visible !important;
+        font-weight: 700;
+        font-size: 17px;
+        flex: 1;
     }
 
-    div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"],
-    div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"] * {
+    .tab-title * {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        opacity: 1 !important;
     }
 
     .footer-note {
@@ -159,7 +157,7 @@ st.markdown(
 
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
@@ -518,13 +516,16 @@ def analyze_privacy(text):
     sentences = split_sentences(text)
 
     for rule in PRIVACY_RULES:
+
         name = rule["name"]
         patterns = rule["patterns"]
 
         if rule.get("special") == "retention":
+
             evidence = None
 
             for sentence in sentences:
+
                 normalized = normalize_text(sentence)
 
                 has_retention = any(
@@ -566,12 +567,15 @@ def analyze_privacy(text):
                     break
 
             if evidence:
+
                 results.append({
                     "name": name,
                     "status": "🟢",
                     "evidence": evidence,
                 })
+
             else:
+
                 results.append({
                     "name": name,
                     "status": "🔴",
@@ -583,21 +587,30 @@ def analyze_privacy(text):
         matched_sentences = []
 
         for sentence in sentences:
-            normalized_sentence = normalize_text(sentence)
+
+            normalized_sentence = normalize_text(
+                sentence
+            )
+
             matched = []
 
             for pattern in patterns:
-                normalized_pattern = normalize_text(pattern)
+
+                normalized_pattern = normalize_text(
+                    pattern
+                )
 
                 if normalized_pattern in normalized_sentence:
                     matched.append(pattern)
 
             if matched:
+
                 matched_sentences.append(
                     (sentence, matched)
                 )
 
         if name == "توضيح طريقة جمع البيانات":
+
             strong_patterns = rule.get(
                 "strong_patterns",
                 []
@@ -606,25 +619,30 @@ def analyze_privacy(text):
             strong_evidence = None
 
             for sentence in sentences:
+
                 if sentence_has_patterns(
                     sentence,
                     strong_patterns
                 ):
+
                     strong_evidence = sentence
                     break
 
             if strong_evidence:
+
                 results.append({
                     "name": name,
                     "status": "🟢",
                     "evidence": strong_evidence,
                 })
+
                 continue
 
         if name == (
             "توضيح الجهات التي قد يتم الإفصاح "
             "لها عن البيانات"
         ):
+
             third_party_only = rule.get(
                 "third_party_only",
                 []
@@ -633,7 +651,10 @@ def analyze_privacy(text):
             only_third_party = False
 
             for sentence in sentences:
-                normalized = normalize_text(sentence)
+
+                normalized = normalize_text(
+                    sentence
+                )
 
                 has_third_party = any(
                     normalize_text(x) in normalized
@@ -670,9 +691,11 @@ def analyze_privacy(text):
                         and has_sharing
                     )
                 ):
+
                     only_third_party = True
 
             if only_third_party:
+
                 results.append({
                     "name": name,
                     "status": "🟡",
@@ -682,24 +705,30 @@ def analyze_privacy(text):
                         else None
                     ),
                 })
+
                 continue
 
         unique_matches = set()
 
         for _, matches in matched_sentences:
+
             for match in matches:
+
                 unique_matches.add(
                     normalize_text(match)
                 )
 
         if matched_sentences:
+
             if len(unique_matches) >= 2:
                 status = "🟢"
             else:
                 status = "🟡"
 
             evidence = matched_sentences[0][0]
+
         else:
+
             status = "🔴"
             evidence = None
 
@@ -802,27 +831,34 @@ STORE_RULES = [
 
 
 def analyze_store(text):
+
     results = []
     sentences = split_sentences(text)
 
     for rule in STORE_RULES:
+
         evidence = None
 
         for sentence in sentences:
+
             if sentence_has_patterns(
                 sentence,
                 rule["patterns"]
             ):
+
                 evidence = sentence
                 break
 
         if evidence:
+
             results.append({
                 "name": rule["name"],
                 "status": "🟢",
                 "evidence": evidence,
             })
+
         else:
+
             results.append({
                 "name": rule["name"],
                 "status": "⚪",
@@ -833,19 +869,26 @@ def analyze_store(text):
 
 
 def fetch_page(url):
+
     try:
+
         response = requests.get(
             url,
             headers=HEADERS,
             timeout=15
         )
+
         response.raise_for_status()
+
         return response.text
+
     except Exception:
+
         return None
 
 
 def extract_page_data(html, base_url):
+
     soup = BeautifulSoup(
         html,
         "html.parser"
@@ -859,6 +902,7 @@ def extract_page_data(html, base_url):
             "svg",
         ]
     ):
+
         tag.decompose()
 
     text = soup.get_text(
@@ -872,6 +916,7 @@ def extract_page_data(html, base_url):
         "a",
         href=True
     ):
+
         label = a.get_text(
             " ",
             strip=True
@@ -891,6 +936,7 @@ def extract_page_data(html, base_url):
 
 
 def find_privacy_page(links):
+
     keywords = [
         "سياسة الخصوصية",
         "سياسه الخصوصيه",
@@ -900,6 +946,7 @@ def find_privacy_page(links):
     ]
 
     for link in links:
+
         label = normalize_text(
             link["label"]
         )
@@ -909,6 +956,7 @@ def find_privacy_page(links):
         )
 
         for keyword in keywords:
+
             normalized_keyword = normalize_text(
                 keyword
             )
@@ -923,6 +971,7 @@ def find_privacy_page(links):
 
 
 def display_result(result):
+
     st.markdown(
         '<div class="result-box">',
         unsafe_allow_html=True
@@ -934,16 +983,21 @@ def display_result(result):
     )
 
     if result.get("evidence"):
+
         with st.expander(
             "🔎 عرض الدليل"
         ):
+
             st.write(
                 result["evidence"]
             )
+
     else:
+
         with st.expander(
             "🔎 لماذا ظهرت هذه النتيجة؟"
         ):
+
             st.write(
                 "لم يعثر المحرك في النص المتاح "
                 "على مؤشر كافٍ لهذا المتطلب."
@@ -956,16 +1010,20 @@ def display_result(result):
 
 
 def privacy_score(results):
+
     if not results:
         return 0
 
     values = []
 
     for result in results:
+
         if result["status"] == "🟢":
             values.append(1)
+
         elif result["status"] == "🟡":
             values.append(0.5)
+
         else:
             values.append(0)
 
@@ -977,14 +1035,17 @@ def privacy_score(results):
 
 
 def store_score(results):
+
     if not results:
         return 0
 
     values = []
 
     for result in results:
+
         if result["status"] == "🟢":
             values.append(1)
+
         else:
             values.append(0)
 
@@ -994,6 +1055,10 @@ def store_score(results):
         * 100
     )
 
+
+# ==========================================
+# الواجهة الرئيسية
+# ==========================================
 
 st.markdown(
     """
@@ -1024,15 +1089,58 @@ st.info(
     "حكمًا قانونيًا أو استشارة قانونية."
 )
 
-tab1, tab2 = st.tabs(
-    [
+
+# ==========================================
+# الخانتان
+# ==========================================
+
+if "selected_tab" not in st.session_state:
+    st.session_state.selected_tab = "store"
+
+
+col_tab1, col_tab2 = st.columns(2)
+
+with col_tab1:
+
+    if st.button(
         "🔎 فحص متجر",
+        key="tab_store",
+        use_container_width=True
+    ):
+        st.session_state.selected_tab = "store"
+
+
+with col_tab2:
+
+    if st.button(
         "📄 فحص سياسة الخصوصية",
-    ]
+        key="tab_privacy",
+        use_container_width=True
+    ):
+        st.session_state.selected_tab = "privacy"
+
+
+st.markdown(
+    """
+    <div class="tab-header">
+        <div class="tab-title">
+            🔎 فحص متجر
+        </div>
+
+        <div class="tab-title">
+            📄 فحص سياسة الخصوصية
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 
-with tab1:
+# ==========================================
+# فحص المتجر
+# ==========================================
+
+if st.session_state.selected_tab == "store":
 
     st.markdown(
         '<div class="section-title">🔎 فحص متجر</div>',
@@ -1234,7 +1342,11 @@ with tab1:
                     )
 
 
-with tab2:
+# ==========================================
+# فحص سياسة الخصوصية
+# ==========================================
+
+else:
 
     st.markdown(
         '<div class="section-title">📄 فحص سياسة الخصوصية</div>',
@@ -1325,6 +1437,10 @@ with tab2:
                     result
                 )
 
+
+# ==========================================
+# الفوتر
+# ==========================================
 
 st.markdown(
     """
