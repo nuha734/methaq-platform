@@ -23,20 +23,18 @@ HEADERS = {
 }
 
 # =========================================================
-# التصميم الأسود
+# التصميم
 # =========================================================
 
 st.markdown(
     """
     <style>
 
-    /* الخلفية العامة */
     .stApp {
         background: #000000 !important;
         color: #ffffff !important;
     }
 
-    /* كل النصوص */
     body,
     p,
     span,
@@ -52,83 +50,107 @@ st.markdown(
     }
 
     /* العنوان */
+
     .main-title {
         text-align: center;
-        padding: 20px 0 5px 0;
-        color: #ffffff !important;
+        padding: 25px 0 8px 0;
     }
 
     .main-title h1 {
-        font-size: 42px;
+        font-size: 44px;
         margin-bottom: 5px;
         font-weight: 800;
         color: #ffffff !important;
     }
 
     .main-title p {
-        color: #d1d5db !important;
+        color: #bdbdbd !important;
         font-size: 17px;
         margin-top: 0;
     }
 
     /* الصندوق التعريفي */
+
     .hero-box {
         background: #111111 !important;
         color: #ffffff !important;
         padding: 28px;
         border-radius: 18px;
-        border: 1px solid #2a2a2a;
-        margin: 10px 0 25px 0;
-        box-shadow: 0 4px 18px rgba(255,255,255,0.03);
+        border: 1px solid #292929;
+        margin: 12px 0 25px 0;
     }
 
     .hero-box b {
         color: #ffffff !important;
+        font-size: 19px;
     }
 
     /* عناوين الأقسام */
+
     .section-title {
-        font-size: 24px;
-        font-weight: 750;
-        margin-top: 10px;
-        margin-bottom: 12px;
+        font-size: 25px;
+        font-weight: 800;
+        margin-top: 12px;
+        margin-bottom: 14px;
         color: #ffffff !important;
     }
 
     /* البطاقات */
+
     div[data-testid="stMetric"] {
         background: #111111 !important;
-        border: 1px solid #2a2a2a !important;
+        border: 1px solid #292929 !important;
         border-radius: 16px;
         padding: 18px;
-        box-shadow: 0 3px 12px rgba(255,255,255,0.03);
     }
 
     div[data-testid="stMetric"] label {
-        color: #d1d5db !important;
+        color: #bdbdbd !important;
     }
 
     div[data-testid="stMetric"] div {
         color: #ffffff !important;
     }
 
-    /* صناديق النتائج */
+    /* صندوق النتيجة */
+
     .result-box {
         background: #111111 !important;
         color: #ffffff !important;
-        border: 1px solid #2a2a2a;
+        border: 1px solid #292929;
         border-radius: 14px;
-        padding: 14px 18px;
-        margin: 8px 0;
+        padding: 15px 18px;
+        margin: 9px 0;
     }
 
-    .result-box p,
-    .result-box span,
-    .result-box div {
+    .result-name {
+        font-size: 17px;
+        font-weight: 700;
         color: #ffffff !important;
     }
 
-    /* خانات الإدخال */
+    .evidence-box {
+        background: #181818 !important;
+        border-right: 3px solid #777777;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 8px;
+        color: #eeeeee !important;
+        line-height: 1.8;
+    }
+
+    .recommendation-box {
+        background: #181818 !important;
+        border-right: 3px solid #777777;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 8px;
+        color: #eeeeee !important;
+        line-height: 1.8;
+    }
+
+    /* الإدخال */
+
     input,
     textarea {
         background-color: #111111 !important;
@@ -138,18 +160,14 @@ st.markdown(
         border: 1px solid #444444 !important;
     }
 
-    textarea {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-    }
-
     input::placeholder,
     textarea::placeholder {
-        color: #9ca3af !important;
-        -webkit-text-fill-color: #9ca3af !important;
+        color: #888888 !important;
+        -webkit-text-fill-color: #888888 !important;
     }
 
-    /* أزرار الفحص */
+    /* الأزرار */
+
     .stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -167,11 +185,11 @@ st.markdown(
     }
 
     .stButton > button:hover {
-        background-color: #e5e5e5 !important;
-        color: #000000 !important;
+        background-color: #dddddd !important;
     }
 
-    /* أزرار اختيار الأقسام */
+    /* أزرار الأقسام */
+
     div[data-testid="column"] .stButton > button {
         background: #111111 !important;
         color: #ffffff !important;
@@ -187,40 +205,41 @@ st.markdown(
 
     div[data-testid="column"] .stButton > button:hover {
         background: #222222 !important;
-        color: #ffffff !important;
     }
 
-    /* الخط الفاصل */
     hr {
-        border-color: #2a2a2a !important;
+        border-color: #292929 !important;
     }
 
-    /* التنبيه */
+    /* التنبيهات */
+
     div[data-testid="stAlert"] {
         background: #111111 !important;
         border: 1px solid #333333 !important;
         color: #ffffff !important;
     }
 
-    /* التذييل */
-    .footer-note {
-        text-align: center;
-        color: #9ca3af !important;
-        font-size: 13px;
-        margin-top: 30px;
-        padding: 15px;
-    }
+    /* Expander */
 
-    /* النص داخل الـ Expander */
     div[data-testid="stExpander"] {
         background: #111111 !important;
-        border: 1px solid #2a2a2a !important;
+        border: 1px solid #292929 !important;
         border-radius: 12px !important;
     }
 
     div[data-testid="stExpander"] summary,
     div[data-testid="stExpander"] summary span {
         color: #ffffff !important;
+    }
+
+    /* التذييل */
+
+    .footer-note {
+        text-align: center;
+        color: #888888 !important;
+        font-size: 13px;
+        margin-top: 35px;
+        padding: 18px;
     }
 
     </style>
@@ -279,18 +298,12 @@ def split_sentences(text):
     ]
 
 
-def sentence_has_patterns(
-    sentence,
-    patterns
-):
+def sentence_has_patterns(sentence, patterns):
 
-    normalized = normalize_text(
-        sentence
-    )
+    normalized = normalize_text(sentence)
 
     return any(
-        normalize_text(pattern)
-        in normalized
+        normalize_text(pattern) in normalized
         for pattern in patterns
     )
 
@@ -625,7 +638,7 @@ PRIVACY_RULES = [
 
 
 # =========================================================
-# تحليل سياسة الخصوصية
+# تحليل الخصوصية
 # =========================================================
 
 def analyze_privacy(text):
@@ -644,9 +657,7 @@ def analyze_privacy(text):
 
             for sentence in sentences:
 
-                normalized = normalize_text(
-                    sentence
-                )
+                normalized = normalize_text(sentence)
 
                 has_retention = any(
                     word in normalized
@@ -682,20 +693,13 @@ def analyze_privacy(text):
                     ]
                 )
 
-                if (
-                    has_retention
-                    and has_duration
-                ):
+                if has_retention and has_duration:
                     evidence = sentence
                     break
 
             results.append({
                 "name": name,
-                "status": (
-                    "🟢"
-                    if evidence
-                    else "🔴"
-                ),
+                "status": "🟢" if evidence else "🔴",
                 "evidence": evidence
             })
 
@@ -705,9 +709,7 @@ def analyze_privacy(text):
 
         for sentence in sentences:
 
-            normalized_sentence = (
-                normalize_text(sentence)
-            )
+            normalized_sentence = normalize_text(sentence)
 
             matched = []
 
@@ -718,10 +720,7 @@ def analyze_privacy(text):
 
             if matched:
                 matched_sentences.append(
-                    (
-                        sentence,
-                        matched
-                    )
+                    (sentence, matched)
                 )
 
         if name == "توضيح طريقة جمع البيانات":
@@ -766,13 +765,10 @@ def analyze_privacy(text):
 
             for sentence in sentences:
 
-                normalized = normalize_text(
-                    sentence
-                )
+                normalized = normalize_text(sentence)
 
                 has_third_party = any(
-                    normalize_text(x)
-                    in normalized
+                    normalize_text(x) in normalized
                     for x in third_party_only
                 )
 
@@ -827,7 +823,6 @@ def analyze_privacy(text):
         for _, matches in matched_sentences:
 
             for match in matches:
-
                 unique_matches.add(
                     normalize_text(match)
                 )
@@ -980,11 +975,7 @@ def analyze_store(text):
 
         results.append({
             "name": rule["name"],
-            "status": (
-                "🟢"
-                if evidence
-                else "⚪"
-            ),
+            "status": "🟢" if evidence else "⚪",
             "evidence": evidence
         })
 
@@ -1014,10 +1005,7 @@ def fetch_page(url):
         return None
 
 
-def extract_page_data(
-    html,
-    base_url
-):
+def extract_page_data(html, base_url):
 
     soup = BeautifulSoup(
         html,
@@ -1100,29 +1088,73 @@ def find_privacy_page(links):
 
 
 # =========================================================
-# عرض النتيجة
+# توصيات
+# =========================================================
+
+def get_recommendation(result):
+
+    status = result["status"]
+    name = result["name"]
+
+    if status == "🟢":
+        return "يوجد في النص مؤشر واضح لهذا المتطلب."
+
+    if status == "🟡":
+
+        return (
+            "يوجد مؤشر مرتبط بالمتطلب، "
+            "لكن يُفضّل مراجعته والتأكد من وضوحه واكتماله."
+        )
+
+    if status == "🔴":
+
+        return (
+            "لم يظهر في النص مؤشر كافٍ لهذا المتطلب، "
+            "ويُفضّل مراجعته وإضافة ما يلزم عند انطباقه."
+        )
+
+    return (
+        "لم يظهر في المحتوى المتاح مؤشر واضح لهذا المتطلب."
+    )
+
+
+# =========================================================
+# عرض النتيجة بشكل احترافي
 # =========================================================
 
 def display_result(result):
+
+    status = result["status"]
 
     st.markdown(
         '<div class="result-box">',
         unsafe_allow_html=True
     )
 
-    st.write(
-        f"{result['status']} "
-        f"{result['name']}"
+    st.markdown(
+        f'<div class="result-name">'
+        f'{status} {result["name"]}'
+        f'</div>',
+        unsafe_allow_html=True
     )
 
     if result.get("evidence"):
 
-        with st.expander(
-            "🔎 عرض الدليل"
-        ):
+        with st.expander("🔎 عرض الدليل"):
 
-            st.write(
-                result["evidence"]
+            st.markdown(
+                f'<div class="evidence-box">'
+                f'{result["evidence"]}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f'<div class="recommendation-box">'
+                f'<b>💡 التوصية:</b><br>'
+                f'{get_recommendation(result)}'
+                f'</div>',
+                unsafe_allow_html=True
             )
 
     else:
@@ -1131,9 +1163,12 @@ def display_result(result):
             "🔎 لماذا ظهرت هذه النتيجة؟"
         ):
 
-            st.write(
-                "لم يعثر المحرك في النص المتاح "
-                "على مؤشر كافٍ لهذا المتطلب."
+            st.markdown(
+                f'<div class="recommendation-box">'
+                f'<b>💡 التوصية:</b><br>'
+                f'{get_recommendation(result)}'
+                f'</div>',
+                unsafe_allow_html=True
             )
 
     st.markdown(
@@ -1141,6 +1176,10 @@ def display_result(result):
         unsafe_allow_html=True
     )
 
+
+# =========================================================
+# حساب الدرجات
+# =========================================================
 
 def privacy_score(results):
 
@@ -1161,9 +1200,7 @@ def privacy_score(results):
             values.append(0)
 
     return round(
-        sum(values)
-        / len(values)
-        * 100
+        sum(values) / len(values) * 100
     )
 
 
@@ -1178,19 +1215,16 @@ def store_score(results):
 
         if result["status"] == "🟢":
             values.append(1)
-
         else:
             values.append(0)
 
     return round(
-        sum(values)
-        / len(values)
-        * 100
+        sum(values) / len(values) * 100
     )
 
 
 # =========================================================
-# رأس المنصة
+# الرأس
 # =========================================================
 
 st.markdown(
@@ -1205,11 +1239,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 st.markdown(
     """
     <div class="hero-box">
-        <b>منصة ميثاق</b><br>
+        <b>منصة ميثاق</b><br><br>
         تساعد المنشآت على إجراء فحص أولي لسياسات الخصوصية
         ومتطلبات المتجر، مع عرض الأدلة والعناصر التي تحتاج
         إلى مراجعة أو تحقق خارجي.
@@ -1217,7 +1250,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 st.info(
     "نتائج ميثاق مؤشرات فحص أولية وليست "
@@ -1234,7 +1266,6 @@ if "active_tab" not in st.session_state:
 
 
 col1, col2 = st.columns(2)
-
 
 with col1:
 
@@ -1293,14 +1324,8 @@ if st.session_state.active_tab == "store":
 
         else:
 
-            if not store_url.startswith(
-                "http"
-            ):
-
-                store_url = (
-                    "https://"
-                    + store_url
-                )
+            if not store_url.startswith("http"):
+                store_url = "https://" + store_url
 
             with st.spinner(
                 "جاري فحص المتجر..."
@@ -1318,11 +1343,9 @@ if st.session_state.active_tab == "store":
 
             else:
 
-                page_text, links = (
-                    extract_page_data(
-                        html,
-                        store_url
-                    )
+                page_text, links = extract_page_data(
+                    html,
+                    store_url
                 )
 
                 link_text = " ".join(
@@ -1335,21 +1358,15 @@ if st.session_state.active_tab == "store":
                 )
 
                 store_results = analyze_store(
-                    page_text
-                    + " "
-                    + link_text
+                    page_text + " " + link_text
                 )
 
-                store_score_value = (
-                    store_score(
-                        store_results
-                    )
+                store_score_value = store_score(
+                    store_results
                 )
 
-                privacy_url = (
-                    find_privacy_page(
-                        links
-                    )
+                privacy_url = find_privacy_page(
+                    links
                 )
 
                 privacy_results = []
@@ -1362,25 +1379,19 @@ if st.session_state.active_tab == "store":
 
                     if privacy_html:
 
-                        privacy_text, _ = (
-                            extract_page_data(
-                                privacy_html,
-                                privacy_url
-                            )
+                        privacy_text, _ = extract_page_data(
+                            privacy_html,
+                            privacy_url
                         )
 
-                        privacy_results = (
-                            analyze_privacy(
-                                privacy_text
-                            )
+                        privacy_results = analyze_privacy(
+                            privacy_text
                         )
 
                 if privacy_results:
 
-                    privacy_score_value = (
-                        privacy_score(
-                            privacy_results
-                        )
+                    privacy_score_value = privacy_score(
+                        privacy_results
                     )
 
                     overall_score = round(
@@ -1393,23 +1404,24 @@ if st.session_state.active_tab == "store":
                 else:
 
                     privacy_score_value = 0
-                    overall_score = (
-                        store_score_value
-                    )
+                    overall_score = store_score_value
 
-                col1, col2, col3 = (
-                    st.columns(3)
+                st.markdown(
+                    '<div class="section-title">'
+                    '📊 ملخص الفحص'
+                    '</div>',
+                    unsafe_allow_html=True
                 )
 
-                with col1:
+                col1, col2, col3 = st.columns(3)
 
+                with col1:
                     st.metric(
                         "المؤشر العام",
                         f"{overall_score}%"
                     )
 
                 with col2:
-
                     st.metric(
                         "فحص المتجر",
                         f"{store_score_value}%"
@@ -1449,7 +1461,7 @@ if st.session_state.active_tab == "store":
 
                     st.markdown(
                         '<div class="section-title">'
-                        'نتائج فحص الخصوصية'
+                        '📄 نتائج فحص الخصوصية'
                         '</div>',
                         unsafe_allow_html=True
                     )
@@ -1481,10 +1493,7 @@ if st.session_state.active_tab == "store":
                 ]
 
                 for item in external_checks:
-
-                    st.write(
-                        f"🔵 {item}"
-                    )
+                    st.write(f"🔵 {item}")
 
 
 # =========================================================
@@ -1546,42 +1555,49 @@ if st.session_state.active_tab == "privacy":
                 if result["status"] == "🔴"
             )
 
-            col1, col2, col3, col4 = (
-                st.columns(4)
+            st.markdown(
+                '<div class="section-title">'
+                '📊 ملخص الفحص'
+                '</div>',
+                unsafe_allow_html=True
             )
 
-            with col1:
+            col1, col2, col3, col4 = st.columns(4)
 
+            with col1:
                 st.metric(
                     "المؤشر",
                     f"{score}%"
                 )
 
             with col2:
-
                 st.metric(
-                    "مؤشرات واضحة",
+                    "🟢 مؤشرات واضحة",
                     clear_count
                 )
 
             with col3:
-
                 st.metric(
-                    "تحتاج مراجعة",
+                    "🟡 تحتاج مراجعة",
                     review_count
                 )
 
             with col4:
-
                 st.metric(
-                    "لم يتم العثور عليها",
+                    "🔴 لم يتم العثور عليها",
                     missing_count
                 )
 
             st.divider()
 
-            for result in results:
+            st.markdown(
+                '<div class="section-title">'
+                '🔍 تفاصيل الفحص'
+                '</div>',
+                unsafe_allow_html=True
+            )
 
+            for result in results:
                 display_result(result)
 
 
