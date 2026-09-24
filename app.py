@@ -4,7 +4,6 @@ import streamlit as st
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 "
@@ -14,11 +13,6 @@ HEADERS = {
         "Chrome/120.0 Safari/537.36"
     )
 }
-
-
-# =========================================================
-# إعدادات الواجهة
-# =========================================================
 
 st.set_page_config(
     page_title="ميثاق | Methaq",
@@ -107,9 +101,42 @@ st.markdown(
         color: #1f2937 !important;
     }
 
-    /* =====================================================
-       جميع الأزرار: أسود + نص أبيض
-       ===================================================== */
+    /* ================================
+       التبويبات
+       ================================ */
+
+    button[data-baseweb="tab"] {
+        color: #1f2937 !important;
+        font-weight: 700 !important;
+        background-color: transparent !important;
+    }
+
+    button[data-baseweb="tab"] p {
+        color: #1f2937 !important;
+    }
+
+    button[data-baseweb="tab"] span {
+        color: #1f2937 !important;
+    }
+
+    button[data-baseweb="tab"] div {
+        color: #1f2937 !important;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #111827 !important;
+        font-weight: 800 !important;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] p,
+    button[data-baseweb="tab"][aria-selected="true"] span,
+    button[data-baseweb="tab"][aria-selected="true"] div {
+        color: #111827 !important;
+    }
+
+    /* ================================
+       جميع الأزرار
+       ================================ */
 
     .stButton > button {
         background-color: #1f2937 !important;
@@ -153,16 +180,11 @@ st.markdown(
 
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
-# =========================================================
-# معالجة النص
-# =========================================================
-
 def normalize_text(text):
-
     if not text:
         return ""
 
@@ -186,21 +208,11 @@ def normalize_text(text):
 
 
 def split_sentences(text):
-
-    parts = re.split(
-        r"[.!؟؛\n]+",
-        text
-    )
-
-    return [
-        part.strip()
-        for part in parts
-        if part.strip()
-    ]
+    parts = re.split(r"[.!؟؛\n]+", text)
+    return [part.strip() for part in parts if part.strip()]
 
 
 def sentence_has_patterns(sentence, patterns):
-
     normalized = normalize_text(sentence)
 
     return any(
@@ -209,12 +221,7 @@ def sentence_has_patterns(sentence, patterns):
     )
 
 
-# =========================================================
-# قواعد الخصوصية
-# =========================================================
-
 PRIVACY_RULES = [
-
     {
         "name": "تحديد البيانات الشخصية التي يتم جمعها",
         "patterns": [
@@ -235,7 +242,6 @@ PRIVACY_RULES = [
             "بيانات الطلب",
         ],
     },
-
     {
         "name": "توضيح الغرض من جمع البيانات",
         "patterns": [
@@ -260,7 +266,6 @@ PRIVACY_RULES = [
             "معالجة المدفوعات",
         ],
     },
-
     {
         "name": "توضيح طريقة جمع البيانات",
         "patterns": [
@@ -284,7 +289,6 @@ PRIVACY_RULES = [
             "عند استخدام المنصة",
             "عند استخدام الموقع",
         ],
-
         "strong_patterns": [
             "عند إنشاء الحساب نجمع",
             "عند انشاء الحساب نجمع",
@@ -297,7 +301,6 @@ PRIVACY_RULES = [
             "من خلال انشاء الحساب",
         ],
     },
-
     {
         "name": "توضيح كيفية معالجة البيانات",
         "patterns": [
@@ -313,7 +316,6 @@ PRIVACY_RULES = [
             "طريقة معالجة البيانات",
         ],
     },
-
     {
         "name": "توضيح وسيلة حفظ وتخزين البيانات",
         "patterns": [
@@ -330,7 +332,6 @@ PRIVACY_RULES = [
             "أنظمة التخزين",
         ],
     },
-
     {
         "name": "توضيح مدة الاحتفاظ بالبيانات",
         "patterns": [
@@ -378,10 +379,8 @@ PRIVACY_RULES = [
             "اعوام",
             "أعوام",
         ],
-
         "special": "retention",
     },
-
     {
         "name": "توضيح كيفية إتلاف أو حذف البيانات",
         "patterns": [
@@ -402,7 +401,6 @@ PRIVACY_RULES = [
             "عند انتهاء الحاجة",
         ],
     },
-
     {
         "name": "توضيح حقوق صاحب البيانات",
         "patterns": [
@@ -432,7 +430,6 @@ PRIVACY_RULES = [
             "نقل البيانات",
         ],
     },
-
     {
         "name": "توضيح طريقة ممارسة حقوق صاحب البيانات",
         "patterns": [
@@ -457,7 +454,6 @@ PRIVACY_RULES = [
             "طلبات صاحب البيانات",
         ],
     },
-
     {
         "name": "توضيح المسوغ النظامي لجمع أو معالجة البيانات",
         "patterns": [
@@ -480,7 +476,6 @@ PRIVACY_RULES = [
             "بموجب الانظمة",
         ],
     },
-
     {
         "name": "توضيح الجهات التي قد يتم الإفصاح لها عن البيانات",
         "patterns": [
@@ -511,7 +506,6 @@ PRIVACY_RULES = [
             "مزودي الدفع",
             "مقدمي الدفع",
         ],
-
         "third_party_only": [
             "طرف ثالث",
             "أطراف ثالثة",
@@ -519,7 +513,6 @@ PRIVACY_RULES = [
             "خدمات من طرف ثالث",
         ],
     },
-
     {
         "name": "توضيح النقل أو المعالجة خارج المملكة",
         "patterns": [
@@ -540,10 +533,6 @@ PRIVACY_RULES = [
     },
 ]
 
-
-# =========================================================
-# تحليل سياسة الخصوصية
-# =========================================================
 
 def analyze_privacy(text):
 
@@ -634,6 +623,7 @@ def analyze_privacy(text):
                     matched.append(pattern)
 
             if matched:
+
                 matched_sentences.append(
                     (sentence, matched)
                 )
@@ -768,12 +758,7 @@ def analyze_privacy(text):
     return results
 
 
-# =========================================================
-# قواعد المتجر
-# =========================================================
-
 STORE_RULES = [
-
     {
         "name": "وجود سياسة الخصوصية",
         "patterns": [
@@ -783,7 +768,6 @@ STORE_RULES = [
             "privacy-policy",
         ],
     },
-
     {
         "name": "وجود سياسة الاستبدال والاسترجاع واسترداد الأموال",
         "patterns": [
@@ -800,7 +784,6 @@ STORE_RULES = [
             "returns",
         ],
     },
-
     {
         "name": "وجود سياسة الشحن والتوصيل",
         "patterns": [
@@ -813,7 +796,6 @@ STORE_RULES = [
             "delivery",
         ],
     },
-
     {
         "name": "وجود سياسة الشكاوى والمقترحات",
         "patterns": [
@@ -825,7 +807,6 @@ STORE_RULES = [
             "complaints",
         ],
     },
-
     {
         "name": "وجود بيانات التواصل",
         "patterns": [
@@ -839,7 +820,6 @@ STORE_RULES = [
             "contact",
         ],
     },
-
     {
         "name": "وجود بيانات المنشأة أو السجل التجاري",
         "patterns": [
@@ -853,7 +833,6 @@ STORE_RULES = [
             "commercial registration",
         ],
     },
-
     {
         "name": "وجود الرقم الضريبي",
         "patterns": [
@@ -867,10 +846,6 @@ STORE_RULES = [
     },
 ]
 
-
-# =========================================================
-# تحليل المتجر
-# =========================================================
 
 def analyze_store(text):
 
@@ -910,10 +885,6 @@ def analyze_store(text):
     return results
 
 
-# =========================================================
-# جلب الصفحة
-# =========================================================
-
 def fetch_page(url):
 
     try:
@@ -932,10 +903,6 @@ def fetch_page(url):
 
         return None
 
-
-# =========================================================
-# استخراج الصفحة
-# =========================================================
 
 def extract_page_data(html, base_url):
 
@@ -985,10 +952,6 @@ def extract_page_data(html, base_url):
     return text, links
 
 
-# =========================================================
-# العثور على سياسة الخصوصية
-# =========================================================
-
 def find_privacy_page(links):
 
     keywords = [
@@ -1023,10 +986,6 @@ def find_privacy_page(links):
 
     return None
 
-
-# =========================================================
-# عرض النتائج
-# =========================================================
 
 def display_result(result):
 
@@ -1066,10 +1025,6 @@ def display_result(result):
         unsafe_allow_html=True
     )
 
-
-# =========================================================
-# الدرجات
-# =========================================================
 
 def privacy_score(results):
 
@@ -1118,10 +1073,6 @@ def store_score(results):
     )
 
 
-# =========================================================
-# رأس الصفحة
-# =========================================================
-
 st.markdown(
     """
     <div class="main-title">
@@ -1152,10 +1103,6 @@ st.info(
 )
 
 
-# =========================================================
-# التبويبات
-# =========================================================
-
 tab1, tab2 = st.tabs(
     [
         "🔎 فحص متجر",
@@ -1163,10 +1110,6 @@ tab1, tab2 = st.tabs(
     ]
 )
 
-
-# =========================================================
-# فحص المتجر
-# =========================================================
 
 with tab1:
 
@@ -1195,11 +1138,7 @@ with tab1:
         else:
 
             if not store_url.startswith("http"):
-
-                store_url = (
-                    "https://"
-                    + store_url
-                )
+                store_url = "https://" + store_url
 
             with st.spinner(
                 "جاري فحص المتجر..."
@@ -1264,18 +1203,14 @@ with tab1:
                             )
                         )
 
-                        privacy_results = (
-                            analyze_privacy(
-                                privacy_text
-                            )
+                        privacy_results = analyze_privacy(
+                            privacy_text
                         )
 
                 if privacy_results:
 
-                    privacy_score_value = (
-                        privacy_score(
-                            privacy_results
-                        )
+                    privacy_score_value = privacy_score(
+                        privacy_results
                     )
 
                     overall_score = round(
@@ -1293,14 +1228,12 @@ with tab1:
                 col1, col2, col3 = st.columns(3)
 
                 with col1:
-
                     st.metric(
                         "المؤشر العام",
                         f"{overall_score}%"
                     )
 
                 with col2:
-
                     st.metric(
                         "فحص المتجر",
                         f"{store_score_value}%"
@@ -1359,29 +1292,15 @@ with tab1:
                 )
 
                 external_checks = [
-
                     "التحقق من صحة السجل التجاري",
-
-                    "التحقق من الرقم الضريبي "
-                    "عند انطباقه",
-
-                    "التحقق من بيانات المنشأة "
-                    "من مصدر رسمي",
-
-                    "التحقق من أي تراخيص أو "
-                    "متطلبات خاصة بنشاط المتجر",
+                    "التحقق من الرقم الضريبي عند انطباقه",
+                    "التحقق من بيانات المنشأة من مصدر رسمي",
+                    "التحقق من أي تراخيص أو متطلبات خاصة بنشاط المتجر",
                 ]
 
                 for item in external_checks:
+                    st.write(f"🔵 {item}")
 
-                    st.write(
-                        f"🔵 {item}"
-                    )
-
-
-# =========================================================
-# فحص سياسة الخصوصية
-# =========================================================
 
 with tab2:
 
@@ -1439,28 +1358,24 @@ with tab2:
             col1, col2, col3, col4 = st.columns(4)
 
             with col1:
-
                 st.metric(
                     "المؤشر",
                     f"{score}%"
                 )
 
             with col2:
-
                 st.metric(
                     "مؤشرات واضحة",
                     clear_count
                 )
 
             with col3:
-
                 st.metric(
                     "تحتاج مراجعة",
                     review_count
                 )
 
             with col4:
-
                 st.metric(
                     "لم يتم العثور عليها",
                     missing_count
@@ -1471,10 +1386,6 @@ with tab2:
             for result in results:
                 display_result(result)
 
-
-# =========================================================
-# التذييل
-# =========================================================
 
 st.markdown(
     """
