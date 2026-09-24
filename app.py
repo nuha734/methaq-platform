@@ -9,10 +9,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================
-# CSS
-# =========================
-
 st.markdown("""
 <style>
 
@@ -141,10 +137,6 @@ details {
 """, unsafe_allow_html=True)
 
 
-# =========================
-# Header
-# =========================
-
 st.markdown(
     '<div class="main-title">⚖️ ميثاق | Methaq</div>',
     unsafe_allow_html=True
@@ -155,10 +147,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# =========================
-# Hero
-# =========================
 
 st.markdown("""
 <div class="hero-box">
@@ -182,10 +170,6 @@ st.warning(
 )
 
 
-# =========================
-# Tabs
-# =========================
-
 if "active_tab" not in st.session_state:
     st.session_state.active_tab = "store"
 
@@ -207,10 +191,6 @@ with col2:
     ):
         st.session_state.active_tab = "privacy"
 
-
-# =========================
-# Privacy Rules
-# =========================
 
 PRIVACY_RULES = [
 
@@ -389,10 +369,6 @@ PRIVACY_RULES = [
 
 ]
 
-
-# =========================
-# Helper Functions
-# =========================
 
 def normalize_text(text):
 
@@ -680,8 +656,7 @@ def analyze_privacy(text):
                 "name": name,
                 "status": status,
                 "evidence": evidence,
-                "recommendation":
-                    rule["recommendation"]
+                "recommendation": rule["recommendation"]
             }
         )
 
@@ -712,10 +687,6 @@ def privacy_score(results):
         (points / total) * 100
     )
 
-
-# =========================
-# Store Rules
-# =========================
 
 STORE_RULES = [
 
@@ -857,10 +828,6 @@ def store_score(results):
     )
 
 
-# =========================
-# Web Functions
-# =========================
-
 def fetch_page(url):
 
     headers = {
@@ -899,7 +866,10 @@ def extract_page_data(html):
 
     links = []
 
-    for a in soup.find_all("a", href=True):
+    for a in soup.find_all(
+        "a",
+        href=True
+    ):
 
         links.append(
             {
@@ -963,10 +933,6 @@ def find_privacy_page(
     return None
 
 
-# =========================
-# Display Result
-# =========================
-
 def display_result(result):
 
     st.markdown(
@@ -1021,10 +987,6 @@ def display_result(result):
         unsafe_allow_html=True
     )
 
-
-# =========================
-# STORE TAB
-# =========================
 
 if st.session_state.active_tab == "store":
 
@@ -1235,10 +1197,6 @@ if st.session_state.active_tab == "store":
                 )
 
 
-# =========================
-# PRIVACY TAB
-# =========================
-
 if st.session_state.active_tab == "privacy":
 
     st.markdown(
@@ -1356,10 +1314,6 @@ if st.session_state.active_tab == "privacy":
                     result
                 )
 
-
-# =========================
-# Footer
-# =========================
 
 st.markdown(
     """
