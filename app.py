@@ -36,27 +36,31 @@ st.markdown(
 
     .stApp {
         background: #f7f8fb;
+        color: #1f2937 !important;
     }
 
     .main-title {
         text-align: center;
         padding: 20px 0 5px 0;
+        color: #1f2937 !important;
     }
 
     .main-title h1 {
         font-size: 42px;
         margin-bottom: 5px;
         font-weight: 800;
+        color: #1f2937 !important;
     }
 
     .main-title p {
-        color: #667085;
+        color: #667085 !important;
         font-size: 17px;
         margin-top: 0;
     }
 
     .hero-box {
         background: white;
+        color: #1f2937 !important;
         padding: 28px;
         border-radius: 18px;
         border: 1px solid #e6e8ee;
@@ -64,11 +68,16 @@ st.markdown(
         box-shadow: 0 4px 18px rgba(0,0,0,0.04);
     }
 
+    .hero-box b {
+        color: #1f2937 !important;
+    }
+
     .section-title {
         font-size: 24px;
         font-weight: 750;
         margin-top: 10px;
         margin-bottom: 12px;
+        color: #1f2937 !important;
     }
 
     div[data-testid="stMetric"] {
@@ -79,17 +88,32 @@ st.markdown(
         box-shadow: 0 3px 12px rgba(0,0,0,0.03);
     }
 
+    div[data-testid="stMetric"] label {
+        color: #475467 !important;
+    }
+
+    div[data-testid="stMetric"] div {
+        color: #1f2937 !important;
+    }
+
     .result-box {
         background: white;
+        color: #1f2937 !important;
         border: 1px solid #e6e8ee;
         border-radius: 14px;
         padding: 14px 18px;
         margin: 8px 0;
     }
 
+    .result-box p,
+    .result-box span,
+    .result-box div {
+        color: #1f2937 !important;
+    }
+
     .footer-note {
         text-align: center;
-        color: #667085;
+        color: #667085 !important;
         font-size: 13px;
         margin-top: 30px;
         padding: 15px;
