@@ -376,6 +376,7 @@ PRIVACY_RULES = [
         ],
 
         "special": "retention",
+
         "recommendation": "يفضل تحديد مدة الاحتفاظ بالبيانات أو توضيح المعيار المستخدم لتحديد مدة الاحتفاظ.",
     },
 
@@ -560,6 +561,10 @@ def analyze_privacy(text):
         name = rule["name"]
         patterns = rule["patterns"]
 
+        # =================================================
+        # فحص مدة الاحتفاظ بالبيانات
+        # =================================================
+
         if rule.get("special") == "retention":
 
             evidence = None
@@ -569,22 +574,26 @@ def analyze_privacy(text):
                 normalized = normalize_text(sentence)
 
                 has_retention = any(
-                    word in normalized
-                    for word in [
+                    phrase in normalized
+                    for phrase in [
                         "احتفاظ",
                         "نحتفظ",
                         "يتم الاحتفاظ",
                         "حفظ البيانات",
+                        "نحتفظ ببياناتك",
                     ]
                 )
 
                 has_duration = any(
-                    word in normalized
-                    for word in [
+                    phrase in normalized
+                    for phrase in [
                         "مدة",
                         "فترة",
                         "لمدة",
                         "للمدة",
+                        "لفترة",
+                        "محددة",
+                        "زمنية محددة",
                         "يوم",
                         "يوما",
                         "يومًا",
@@ -599,6 +608,7 @@ def analyze_privacy(text):
                         "حتى انتهاء",
                         "حتى تحقيق",
                         "للمدة اللازمة",
+                        "المدة اللازمة",
                     ]
                 )
 
