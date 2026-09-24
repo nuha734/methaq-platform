@@ -23,79 +23,100 @@ HEADERS = {
 }
 
 # =========================================================
-# CSS
+# التصميم الأسود
 # =========================================================
 
 st.markdown(
     """
     <style>
 
+    /* الخلفية العامة */
     .stApp {
-        background: #f7f8fb;
-        color: #1f2937 !important;
+        background: #000000 !important;
+        color: #ffffff !important;
     }
 
+    /* كل النصوص */
+    body,
+    p,
+    span,
+    label,
+    div,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: #ffffff !important;
+    }
+
+    /* العنوان */
     .main-title {
         text-align: center;
         padding: 20px 0 5px 0;
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
     .main-title h1 {
         font-size: 42px;
         margin-bottom: 5px;
         font-weight: 800;
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
     .main-title p {
-        color: #667085 !important;
+        color: #d1d5db !important;
         font-size: 17px;
         margin-top: 0;
     }
 
+    /* الصندوق التعريفي */
     .hero-box {
-        background: white;
-        color: #1f2937 !important;
+        background: #111111 !important;
+        color: #ffffff !important;
         padding: 28px;
         border-radius: 18px;
-        border: 1px solid #e6e8ee;
+        border: 1px solid #2a2a2a;
         margin: 10px 0 25px 0;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+        box-shadow: 0 4px 18px rgba(255,255,255,0.03);
     }
 
     .hero-box b {
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
+    /* عناوين الأقسام */
     .section-title {
         font-size: 24px;
         font-weight: 750;
         margin-top: 10px;
         margin-bottom: 12px;
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
+    /* البطاقات */
     div[data-testid="stMetric"] {
-        background: white;
-        border: 1px solid #e6e8ee;
+        background: #111111 !important;
+        border: 1px solid #2a2a2a !important;
         border-radius: 16px;
         padding: 18px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+        box-shadow: 0 3px 12px rgba(255,255,255,0.03);
     }
 
     div[data-testid="stMetric"] label {
-        color: #475467 !important;
+        color: #d1d5db !important;
     }
 
     div[data-testid="stMetric"] div {
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
+    /* صناديق النتائج */
     .result-box {
-        background: white;
-        color: #1f2937 !important;
-        border: 1px solid #e6e8ee;
+        background: #111111 !important;
+        color: #ffffff !important;
+        border: 1px solid #2a2a2a;
         border-radius: 14px;
         padding: 14px 18px;
         margin: 8px 0;
@@ -104,53 +125,102 @@ st.markdown(
     .result-box p,
     .result-box span,
     .result-box div {
-        color: #1f2937 !important;
+        color: #ffffff !important;
     }
 
-    .footer-note {
-        text-align: center;
-        color: #667085 !important;
-        font-size: 13px;
-        margin-top: 30px;
-        padding: 15px;
+    /* خانات الإدخال */
+    input,
+    textarea {
+        background-color: #111111 !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        caret-color: #ffffff !important;
+        border: 1px solid #444444 !important;
     }
 
-    /* =====================================================
-       أزرار الفحص
-       ===================================================== */
+    textarea {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
 
+    input::placeholder,
+    textarea::placeholder {
+        color: #9ca3af !important;
+        -webkit-text-fill-color: #9ca3af !important;
+    }
+
+    /* أزرار الفحص */
     .stButton > button {
-        background-color: #1f2937 !important;
-        color: white !important;
-        border: 1px solid #1f2937 !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #ffffff !important;
         border-radius: 10px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         min-height: 45px !important;
     }
 
     .stButton > button p,
     .stButton > button span,
     .stButton > button div {
-        color: white !important;
-        -webkit-text-fill-color: white !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
     }
 
     .stButton > button:hover {
-        background-color: #111827 !important;
-        color: white !important;
+        background-color: #e5e5e5 !important;
+        color: #000000 !important;
     }
 
-    /* =====================================================
-       خانات اختيار القسم
-       ===================================================== */
+    /* أزرار اختيار الأقسام */
+    div[data-testid="column"] .stButton > button {
+        background: #111111 !important;
+        color: #ffffff !important;
+        border: 1px solid #444444 !important;
+    }
 
-    .tab-title {
-        background: white;
-        border: 1px solid #e6e8ee;
-        border-radius: 14px;
-        padding: 8px;
-        margin-bottom: 20px;
+    div[data-testid="column"] .stButton > button p,
+    div[data-testid="column"] .stButton > button span,
+    div[data-testid="column"] .stButton > button div {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    div[data-testid="column"] .stButton > button:hover {
+        background: #222222 !important;
+        color: #ffffff !important;
+    }
+
+    /* الخط الفاصل */
+    hr {
+        border-color: #2a2a2a !important;
+    }
+
+    /* التنبيه */
+    div[data-testid="stAlert"] {
+        background: #111111 !important;
+        border: 1px solid #333333 !important;
+        color: #ffffff !important;
+    }
+
+    /* التذييل */
+    .footer-note {
         text-align: center;
+        color: #9ca3af !important;
+        font-size: 13px;
+        margin-top: 30px;
+        padding: 15px;
+    }
+
+    /* النص داخل الـ Expander */
+    div[data-testid="stExpander"] {
+        background: #111111 !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 12px !important;
+    }
+
+    div[data-testid="stExpander"] summary,
+    div[data-testid="stExpander"] summary span {
+        color: #ffffff !important;
     }
 
     </style>
@@ -568,10 +638,6 @@ def analyze_privacy(text):
         name = rule["name"]
         patterns = rule["patterns"]
 
-        # -----------------------------------------
-        # الاحتفاظ بالبيانات
-        # -----------------------------------------
-
         if rule.get("special") == "retention":
 
             evidence = None
@@ -651,17 +717,12 @@ def analyze_privacy(text):
                     matched.append(pattern)
 
             if matched:
-
                 matched_sentences.append(
                     (
                         sentence,
                         matched
                     )
                 )
-
-        # -----------------------------------------
-        # طريقة جمع البيانات
-        # -----------------------------------------
 
         if name == "توضيح طريقة جمع البيانات":
 
@@ -690,10 +751,6 @@ def analyze_privacy(text):
                 })
 
                 continue
-
-        # -----------------------------------------
-        # الإفصاح للجهات الأخرى
-        # -----------------------------------------
 
         if name == (
             "توضيح الجهات التي قد يتم الإفصاح "
@@ -764,10 +821,6 @@ def analyze_privacy(text):
                 })
 
                 continue
-
-        # -----------------------------------------
-        # النتيجة العامة
-        # -----------------------------------------
 
         unique_matches = set()
 
