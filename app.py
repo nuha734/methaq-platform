@@ -5,10 +5,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 
-# =========================================================
-# إعدادات عامة
-# =========================================================
-
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 "
@@ -21,7 +17,7 @@ HEADERS = {
 
 
 # =========================================================
-# واجهة ميثاق
+# إعدادات الواجهة
 # =========================================================
 
 st.set_page_config(
@@ -111,15 +107,40 @@ st.markdown(
         color: #1f2937 !important;
     }
 
-    /* إظهار نصوص الأزرار */
+    /* =====================================================
+       جميع الأزرار: أسود + نص أبيض
+       ===================================================== */
+
     .stButton > button {
-        color: #1f2937 !important;
-        background-color: white !important;
-        border: 1px solid #d0d5dd !important;
+        background-color: #1f2937 !important;
+        color: #ffffff !important;
+        border: 1px solid #1f2937 !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
     }
 
     .stButton > button p {
-        color: #1f2937 !important;
+        color: #ffffff !important;
+    }
+
+    .stButton > button span {
+        color: #ffffff !important;
+    }
+
+    .stButton > button div {
+        color: #ffffff !important;
+    }
+
+    .stButton > button:hover {
+        background-color: #111827 !important;
+        color: #ffffff !important;
+        border-color: #111827 !important;
+    }
+
+    .stButton > button:hover p,
+    .stButton > button:hover span,
+    .stButton > button:hover div {
+        color: #ffffff !important;
     }
 
     .footer-note {
@@ -527,7 +548,6 @@ PRIVACY_RULES = [
 def analyze_privacy(text):
 
     results = []
-
     sentences = split_sentences(text)
 
     for rule in PRIVACY_RULES:
@@ -578,7 +598,6 @@ def analyze_privacy(text):
                 )
 
                 if has_retention and has_duration:
-
                     evidence = sentence
                     break
 
@@ -605,7 +624,6 @@ def analyze_privacy(text):
         for sentence in sentences:
 
             normalized_sentence = normalize_text(sentence)
-
             matched = []
 
             for pattern in patterns:
@@ -613,16 +631,11 @@ def analyze_privacy(text):
                 normalized_pattern = normalize_text(pattern)
 
                 if normalized_pattern in normalized_sentence:
-
                     matched.append(pattern)
 
             if matched:
-
                 matched_sentences.append(
-                    (
-                        sentence,
-                        matched
-                    )
+                    (sentence, matched)
                 )
 
         if name == "توضيح طريقة جمع البيانات":
@@ -735,11 +748,8 @@ def analyze_privacy(text):
         if matched_sentences:
 
             if len(unique_matches) >= 2:
-
                 status = "🟢"
-
             else:
-
                 status = "🟡"
 
             evidence = matched_sentences[0][0]
@@ -865,7 +875,6 @@ STORE_RULES = [
 def analyze_store(text):
 
     results = []
-
     sentences = split_sentences(text)
 
     for rule in STORE_RULES:
@@ -928,10 +937,7 @@ def fetch_page(url):
 # استخراج الصفحة
 # =========================================================
 
-def extract_page_data(
-    html,
-    base_url
-):
+def extract_page_data(html, base_url):
 
     soup = BeautifulSoup(
         html,
@@ -1010,11 +1016,9 @@ def find_privacy_page(links):
             )
 
             if normalized_keyword in label:
-
                 return link["url"]
 
             if normalized_keyword in url:
-
                 return link["url"]
 
     return None
@@ -1190,9 +1194,7 @@ with tab1:
 
         else:
 
-            if not store_url.startswith(
-                "http"
-            ):
+            if not store_url.startswith("http"):
 
                 store_url = (
                     "https://"
@@ -1231,34 +1233,26 @@ with tab1:
                     ]
                 )
 
-                store_results = (
-                    analyze_store(
-                        page_text
-                        + " "
-                        + link_text
-                    )
+                store_results = analyze_store(
+                    page_text
+                    + " "
+                    + link_text
                 )
 
-                store_score_value = (
-                    store_score(
-                        store_results
-                    )
+                store_score_value = store_score(
+                    store_results
                 )
 
-                privacy_url = (
-                    find_privacy_page(
-                        links
-                    )
+                privacy_url = find_privacy_page(
+                    links
                 )
 
                 privacy_results = []
 
                 if privacy_url:
 
-                    privacy_html = (
-                        fetch_page(
-                            privacy_url
-                        )
+                    privacy_html = fetch_page(
+                        privacy_url
                     )
 
                     if privacy_html:
@@ -1294,14 +1288,9 @@ with tab1:
                 else:
 
                     privacy_score_value = 0
+                    overall_score = store_score_value
 
-                    overall_score = (
-                        store_score_value
-                    )
-
-                col1, col2, col3 = (
-                    st.columns(3)
-                )
+                col1, col2, col3 = st.columns(3)
 
                 with col1:
 
@@ -1341,10 +1330,7 @@ with tab1:
                 )
 
                 for result in store_results:
-
-                    display_result(
-                        result
-                    )
+                    display_result(result)
 
                 st.divider()
 
@@ -1356,10 +1342,7 @@ with tab1:
                     )
 
                     for result in privacy_results:
-
-                        display_result(
-                            result
-                        )
+                        display_result(result)
 
                 else:
 
@@ -1410,9 +1393,7 @@ with tab2:
     privacy_text = st.text_area(
         "الصق نص سياسة الخصوصية هنا",
         height=350,
-        placeholder=(
-            "الصق سياسة الخصوصية هنا..."
-        ),
+        placeholder="الصق سياسة الخصوصية هنا...",
     )
 
     if st.button(
@@ -1455,9 +1436,7 @@ with tab2:
                 if result["status"] == "🔴"
             )
 
-            col1, col2, col3, col4 = (
-                st.columns(4)
-            )
+            col1, col2, col3, col4 = st.columns(4)
 
             with col1:
 
@@ -1490,14 +1469,11 @@ with tab2:
             st.divider()
 
             for result in results:
-
-                display_result(
-                    result
-                )
+                display_result(result)
 
 
 # =========================================================
-# تذييل
+# التذييل
 # =========================================================
 
 st.markdown(
