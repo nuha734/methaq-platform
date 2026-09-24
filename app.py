@@ -1,13 +1,7 @@
-import re
-import requests
 import streamlit as st
+import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-
-
-# =========================================================
-# إعداد الصفحة
-# =========================================================
+import re
 
 st.set_page_config(
     page_title="ميثاق | Methaq",
@@ -15,80 +9,63 @@ st.set_page_config(
     layout="wide"
 )
 
-
-# =========================================================
+# =========================
 # CSS
-# =========================================================
+# =========================
 
 st.markdown("""
 <style>
 
 .stApp {
-    background: #000000 !important;
-    color: #ffffff !important;
+    background-color: #000000;
+    color: white;
 }
 
-html, body, [class*="css"] {
-    color: #ffffff !important;
-}
-
-h1, h2, h3, h4, h5, h6, p, span, label, div {
-    color: #ffffff;
+* {
+    color: white;
 }
 
 .main-title {
-    text-align: center;
     font-size: 42px;
-    font-weight: 800;
+    font-weight: 700;
+    text-align: center;
     margin-bottom: 5px;
-    color: #ffffff !important;
 }
 
 .subtitle {
-    text-align: center;
-    color: #cccccc !important;
     font-size: 18px;
-    margin-bottom: 25px;
+    color: #aaaaaa !important;
+    text-align: center;
 }
 
 .hero-box {
-    background: #111111;
+    background-color: #111111;
     border: 1px solid #333333;
     border-radius: 18px;
     padding: 25px;
-    text-align: center;
-    margin-bottom: 20px;
+    margin-top: 25px;
+    margin-bottom: 25px;
 }
 
 .hero-title {
     font-size: 26px;
     font-weight: 700;
-    color: #ffffff !important;
+    margin-bottom: 10px;
 }
 
 .hero-text {
     color: #cccccc !important;
     font-size: 16px;
+    line-height: 1.8;
+    font-weight: 700;
 }
 
 .metric-card {
-    background: #111111;
+    background-color: #111111;
     border: 1px solid #333333;
     border-radius: 15px;
     padding: 20px;
     text-align: center;
-    margin-bottom: 15px;
-}
-
-.metric-number {
-    font-size: 32px;
-    font-weight: 800;
-    color: #ffffff !important;
-}
-
-.metric-label {
-    font-size: 14px;
-    color: #aaaaaa !important;
 }
 
 .section-title {
@@ -96,70 +73,56 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {
     font-weight: 700;
     margin-top: 25px;
     margin-bottom: 15px;
-    color: #ffffff !important;
 }
 
 .result-box {
-    background: #111111;
+    background-color: #111111;
     border: 1px solid #333333;
     border-radius: 14px;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 18px;
+    margin-bottom: 12px;
 }
 
 .result-name {
-    font-size: 17px;
-    font-weight: 600;
-    color: #ffffff !important;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .evidence-box {
-    background: #191919;
-    border: 1px solid #444444;
-    border-radius: 10px;
+    background-color: #191919;
+    border-right: 4px solid #666666;
+    border-radius: 8px;
     padding: 12px;
     margin-top: 10px;
-    color: #dddddd !important;
     line-height: 1.8;
 }
 
 .recommendation-box {
-    background: #151515;
-    border-right: 3px solid #777777;
+    background-color: #161616;
     border-radius: 8px;
     padding: 12px;
     margin-top: 10px;
-    color: #eeeeee !important;
     line-height: 1.8;
 }
 
 .footer {
     text-align: center;
-    color: #777777 !important;
+    color: #888888 !important;
     margin-top: 40px;
     padding: 20px;
 }
 
-textarea, input {
+textarea,
+input {
     background-color: #111111 !important;
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
 }
 
-textarea::placeholder,
-input::placeholder {
-    color: #888888 !important;
-    -webkit-text-fill-color: #888888 !important;
-}
-
-.stTextInput > div > div > input {
-    background-color: #111111 !important;
-    color: #ffffff !important;
-}
-
+.stTextInput input,
 .stTextArea textarea {
-    background-color: #111111 !important;
-    color: #ffffff !important;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
 }
 
 button {
@@ -168,21 +131,19 @@ button {
 
 .stAlert {
     background-color: #111111 !important;
-    color: #ffffff !important;
 }
 
-div[data-testid="stExpander"] {
+details {
     background-color: #111111 !important;
-    border: 1px solid #333333 !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# =========================================================
-# العنوان والنص الأصلي
-# =========================================================
+# =========================
+# Header
+# =========================
 
 st.markdown(
     '<div class="main-title">⚖️ ميثاق | Methaq</div>',
@@ -194,106 +155,73 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+# =========================
+# Hero
+# =========================
+
 st.markdown("""
 <div class="hero-box">
 
-    <div class="hero-title">
-        منصة ميثاق
-    </div>
+<div class="hero-title">
+منصة ميثاق
+</div>
 
-    <div class="hero-text">
-        تساعد المنشآت على إجراء فحص أولي لسياسات الخصوصية ومتطلبات المتجر،
-        مع عرض الأدلة والعناصر التي تحتاج إلى مراجعة أو تحقق خارجي.
-    </div>
+<div class="hero-text">
+تساعد المنشآت على إجراء فحص أولي لسياسات الخصوصية ومتطلبات المتجر،
+مع عرض الأدلة والعناصر التي تحتاج إلى مراجعة أو تحقق خارجي.
+</div>
 
 </div>
 """, unsafe_allow_html=True)
 
-st.info(
+
+st.warning(
     "⚠️ نتائج ميثاق هي مؤشر فحص مبدئي لأغراض تجريبية، "
     "ولا تُعد استشارة قانونية أو حكمًا نهائيًا بالامتثال."
 )
 
 
-# =========================================================
-# أدوات النص
-# =========================================================
+# =========================
+# Tabs
+# =========================
 
-def normalize_text(text):
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "store"
 
-    if not text:
-        return ""
+col1, col2 = st.columns(2)
 
-    text = text.replace("\u200f", " ")
-    text = text.replace("\u200e", " ")
-    text = text.replace("\n", " ")
-    text = re.sub(r"\s+", " ", text)
+with col1:
+    if st.button(
+        "🔎 فحص متجر",
+        key="tab_store",
+        use_container_width=True
+    ):
+        st.session_state.active_tab = "store"
 
-    return text.strip()
-
-
-def split_sentences(text):
-
-    text = normalize_text(text)
-
-    parts = re.split(
-        r"(?<=[\.\!\؟\?؛;])\s+",
-        text
-    )
-
-    return [
-        p.strip()
-        for p in parts
-        if p.strip()
-    ]
+with col2:
+    if st.button(
+        "📄 فحص سياسة الخصوصية",
+        key="tab_privacy",
+        use_container_width=True
+    ):
+        st.session_state.active_tab = "privacy"
 
 
-def sentence_has_patterns(sentence, patterns):
-
-    for pattern in patterns:
-
-        if re.search(
-            pattern,
-            sentence,
-            re.IGNORECASE
-        ):
-            return True
-
-    return False
-
-
-def get_evidence(text, patterns):
-
-    sentences = split_sentences(text)
-
-    for sentence in sentences:
-
-        if sentence_has_patterns(
-            sentence,
-            patterns
-        ):
-            return sentence
-
-    return ""
-
-
-# =========================================================
-# قواعد الخصوصية
-# =========================================================
+# =========================
+# Privacy Rules
+# =========================
 
 PRIVACY_RULES = [
 
     {
         "name": "تحديد البيانات الشخصية التي يتم جمعها",
         "patterns": [
-            r"بيانات.*شخصية",
-            r"المعلومات.*الشخصية",
-            r"نجمع.*بيانات",
-            r"نجمع.*معلومات",
-            r"الاسم",
-            r"رقم.*الهاتف",
-            r"البريد.*الإلكتروني",
-            r"عنوان.*الشحن"
+            r"نجمع",
+            r"البيانات الشخصية",
+            r"المعلومات الشخصية",
+            r"بياناتك",
+            r"بيانات المستخدم"
         ],
         "recommendation":
             "يُفضّل توضيح أنواع البيانات الشخصية التي يتم جمعها ومتى يتم جمع كل نوع."
@@ -303,12 +231,10 @@ PRIVACY_RULES = [
         "name": "توضيح الغرض من جمع البيانات",
         "patterns": [
             r"الغرض",
-            r"أغراض.*جمع",
-            r"لأغراض",
-            r"تقديم.*الخدمات",
-            r"تنفيذ.*الطلبات",
-            r"تحسين.*الخدمات",
-            r"التواصل.*مع.*المستخدم"
+            r"أغراض",
+            r"نستخدم البيانات",
+            r"نستخدم المعلومات",
+            r"لأغراض"
         ],
         "recommendation":
             "يُفضّل توضيح الغرض من جمع كل نوع من البيانات وربطه بالاستخدام المقصود."
@@ -317,21 +243,12 @@ PRIVACY_RULES = [
     {
         "name": "توضيح طريقة جمع البيانات",
         "patterns": [
-            r"عند.*إنشاء.*الحساب",
-            r"عند.*التسجيل",
-            r"عند.*الشراء",
-            r"عند.*إتمام.*الطلب",
-            r"من.*خلال.*النماذج",
-            r"من.*المستخدم",
-            r"ملفات.*الارتباط",
-            r"ملفات.*تعريف.*الارتباط"
-        ],
-        "strong_patterns": [
-            r"عند.*إنشاء.*الحساب.*نجمع",
-            r"عند.*التسجيل.*نجمع",
-            r"عند.*الشراء.*نجمع",
-            r"من.*خلال.*النماذج.*نجمع",
-            r"يجمع.*من.*المستخدم"
+            r"عند إنشاء الحساب",
+            r"عند التسجيل",
+            r"عند الشراء",
+            r"النماذج",
+            r"يتم جمع",
+            r"نجمع من خلال"
         ],
         "recommendation":
             "يُفضّل توضيح الوسائل أو المصادر التي تُجمع منها البيانات، مثل التسجيل أو النماذج أو عمليات الشراء."
@@ -340,12 +257,10 @@ PRIVACY_RULES = [
     {
         "name": "توضيح كيفية معالجة البيانات",
         "patterns": [
-            r"معالجة.*البيانات",
-            r"نعالج.*البيانات",
-            r"استخدام.*البيانات",
-            r"تستخدم.*البيانات",
-            r"تحليل.*البيانات",
-            r"معالجة.*المعلومات"
+            r"معالجة البيانات",
+            r"نعالج",
+            r"معالجة معلوماتك",
+            r"استخدام البيانات"
         ],
         "recommendation":
             "يُفضّل توضيح كيفية استخدام البيانات ومعالجتها بعد جمعها."
@@ -354,14 +269,11 @@ PRIVACY_RULES = [
     {
         "name": "توضيح وسيلة حفظ وتخزين البيانات",
         "patterns": [
-            r"تخزين.*البيانات",
-            r"حفظ.*البيانات",
-            r"تُحفظ.*البيانات",
-            r"تخزن.*البيانات",
-            r"خوادم",
-            r"وسائل.*الحماية",
-            r"إجراءات.*الأمان",
-            r"أمن.*المعلومات"
+            r"تخزين",
+            r"نخزن",
+            r"حفظ البيانات",
+            r"حماية البيانات",
+            r"أمن المعلومات"
         ],
         "recommendation":
             "يُفضّل توضيح كيفية حفظ وتخزين البيانات والضوابط المتخذة لحمايتها."
@@ -369,20 +281,19 @@ PRIVACY_RULES = [
 
     {
         "name": "توضيح مدة الاحتفاظ بالبيانات",
-        "special": "retention",
         "patterns": [
             r"الاحتفاظ",
+            r"مدة الاحتفاظ",
             r"نحتفظ",
-            r"مدة.*الاحتفاظ",
-            r"فترة.*الاحتفاظ",
-            r"البيانات.*لمدة"
+            r"فترة الاحتفاظ"
         ],
         "duration_patterns": [
-            r"\d+\s*(?:يوم|أيام|شهر|أشهر|سنة|سنوات)",
-            r"حتى.*انتهاء",
-            r"طوال.*مدة",
-            r"عند.*انتهاء.*الحاجة",
-            r"طالما.*ضرورية"
+            r"سنة",
+            r"سنوات",
+            r"أشهر",
+            r"أيام",
+            r"حتى انتهاء",
+            r"طالما"
         ],
         "recommendation":
             "يُفضّل توضيح مدة الاحتفاظ بالبيانات أو المعيار المستخدم لتحديد مدة الاحتفاظ بها."
@@ -391,12 +302,11 @@ PRIVACY_RULES = [
     {
         "name": "توضيح كيفية إتلاف أو حذف البيانات",
         "patterns": [
-            r"حذف.*البيانات",
-            r"إتلاف.*البيانات",
-            r"حذف.*المعلومات",
-            r"إتلاف.*المعلومات",
-            r"التخلص.*من.*البيانات",
-            r"مسح.*البيانات"
+            r"حذف البيانات",
+            r"حذف معلوماتك",
+            r"إتلاف البيانات",
+            r"إتلاف المعلومات",
+            r"حذفها"
         ],
         "recommendation":
             "يُفضّل توضيح متى وكيف يتم حذف أو إتلاف البيانات بعد انتهاء الحاجة إليها."
@@ -405,13 +315,12 @@ PRIVACY_RULES = [
     {
         "name": "توضيح حقوق صاحب البيانات",
         "patterns": [
-            r"حقوق.*صاحب.*البيانات",
-            r"حقوق.*المستخدم",
-            r"حق.*الوصول",
-            r"حق.*التصحيح",
-            r"حق.*الحذف",
-            r"حق.*الاعتراض",
-            r"حق.*سحب.*الموافقة"
+            r"حقوق صاحب البيانات",
+            r"حقوق المستخدم",
+            r"حقوقك",
+            r"حقوق العميل",
+            r"الوصول إلى بياناتك",
+            r"تصحيح بياناتك"
         ],
         "recommendation":
             "يُفضّل توضيح حقوق صاحب البيانات المتاحة له بصورة واضحة."
@@ -420,13 +329,11 @@ PRIVACY_RULES = [
     {
         "name": "توضيح طريقة ممارسة حقوق صاحب البيانات",
         "patterns": [
-            r"ممارسة.*الحقوق",
-            r"طلب.*الوصول",
-            r"طلب.*التصحيح",
-            r"طلب.*الحذف",
-            r"يمكن.*للمستخدم.*طلب",
-            r"التواصل.*لممارسة.*الحقوق",
-            r"طلبات.*البيانات"
+            r"طلب ممارسة",
+            r"تقديم طلب",
+            r"التواصل معنا",
+            r"طلبات الحقوق",
+            r"ممارسة حقوقك"
         ],
         "recommendation":
             "يُفضّل توضيح طريقة تقديم طلب لممارسة الحقوق ووسيلة التواصل المخصصة لذلك."
@@ -435,13 +342,11 @@ PRIVACY_RULES = [
     {
         "name": "توضيح المسوغ النظامي لجمع أو معالجة البيانات",
         "patterns": [
-            r"المسوغ.*النظامي",
-            r"الأساس.*النظامي",
-            r"الأساس.*القانوني",
-            r"المسوغ.*القانوني",
-            r"الموافقة",
-            r"الالتزام.*النظامي",
-            r"متطلبات.*نظامية"
+            r"مسوغ نظامي",
+            r"أساس نظامي",
+            r"الأساس القانوني",
+            r"المسوغ",
+            r"المتطلبات النظامية"
         ],
         "recommendation":
             "يُفضّل توضيح المسوغ النظامي المحدد الذي تستند إليه معالجة البيانات، بدل الاكتفاء بذكر المتطلبات النظامية."
@@ -450,17 +355,20 @@ PRIVACY_RULES = [
     {
         "name": "توضيح الجهات التي قد يتم الإفصاح لها عن البيانات",
         "patterns": [
-            r"الإفصاح.*عن.*البيانات",
-            r"مشاركة.*البيانات",
-            r"نشارك.*البيانات",
-            r"نُفصح.*عن.*البيانات",
-            r"الجهات.*التي",
-            r"أطراف.*ثالثة",
-            r"طرف.*ثالث",
-            r"مقدمي.*الخدمات",
-            r"مزودي.*الخدمات"
+            r"الإفصاح",
+            r"نفصح",
+            r"مشاركة البيانات",
+            r"نشارك البيانات",
+            r"جهات خارجية",
+            r"طرف ثالث",
+            r"أطراف ثالثة"
         ],
-        "third_party_only": True,
+        "third_party_patterns": [
+            r"طرف ثالث",
+            r"أطراف ثالثة",
+            r"جهات خارجية",
+            r"مزودي الخدمات"
+        ],
         "recommendation":
             "يُفضّل توضيح الجهات أو الفئات التي قد تُفصح لها البيانات والحالات التي يتم فيها الإفصاح."
     },
@@ -468,12 +376,12 @@ PRIVACY_RULES = [
     {
         "name": "توضيح النقل أو المعالجة خارج المملكة",
         "patterns": [
-            r"خارج.*المملكة",
-            r"خارج.*السعودية",
-            r"نقل.*البيانات.*خارج",
-            r"معالجة.*البيانات.*خارج",
-            r"نقل.*البيانات.*دولي",
-            r"النقل.*الدولي"
+            r"خارج المملكة",
+            r"خارج السعودية",
+            r"نقل البيانات",
+            r"النقل الدولي",
+            r"دولة أخرى",
+            r"دول أخرى"
         ],
         "recommendation":
             "يُفضّل توضيح حالات النقل أو المعالجة خارج المملكة والضوابط المطبقة عليها."
@@ -482,307 +390,360 @@ PRIVACY_RULES = [
 ]
 
 
-# =========================================================
-# فحص الخصوصية
-# =========================================================
+# =========================
+# Helper Functions
+# =========================
 
-def analyze_privacy(text):
+def normalize_text(text):
+
+    text = text or ""
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
+
+
+def split_sentences(text):
 
     text = normalize_text(text)
 
+    sentences = re.split(
+        r"[.!؟\n]+",
+        text
+    )
+
+    return [
+        sentence.strip()
+        for sentence in sentences
+        if sentence.strip()
+    ]
+
+
+def sentence_has_patterns(sentence, patterns):
+
+    matches = []
+
+    for pattern in patterns:
+
+        if re.search(
+            pattern,
+            sentence,
+            re.IGNORECASE
+        ):
+            matches.append(pattern)
+
+    return matches
+
+
+def get_evidence(
+    text,
+    patterns
+):
+
+    sentences = split_sentences(text)
+
+    for sentence in sentences:
+
+        matches = sentence_has_patterns(
+            sentence,
+            patterns
+        )
+
+        if matches:
+
+            return sentence
+
+    return ""
+
+
+def analyze_privacy(text):
+
     results = []
+
+    text = normalize_text(text)
 
     for rule in PRIVACY_RULES:
 
         name = rule["name"]
+
         patterns = rule["patterns"]
 
         evidence = ""
-        status = "🔴"
 
-        # الاحتفاظ
-        if rule.get("special") == "retention":
+        matched_count = 0
 
-            has_retention = any(
+        matched_sentences = []
+
+        for sentence in split_sentences(text):
+
+            matches = sentence_has_patterns(
+                sentence,
+                patterns
+            )
+
+            if matches:
+
+                matched_count += len(
+                    set(matches)
+                )
+
+                matched_sentences.append(
+                    sentence
+                )
+
+        # -------------------------
+        # Retention special logic
+        # -------------------------
+
+        if name == "توضيح مدة الاحتفاظ بالبيانات":
+
+            retention_found = any(
                 re.search(
-                    pattern,
+                    p,
                     text,
                     re.IGNORECASE
                 )
-                for pattern in patterns
+                for p in patterns
             )
 
-            has_duration = any(
+            duration_found = any(
                 re.search(
-                    pattern,
+                    p,
                     text,
                     re.IGNORECASE
                 )
-                for pattern in rule["duration_patterns"]
+                for p in rule["duration_patterns"]
             )
 
-            if has_retention and has_duration:
+            if retention_found and duration_found:
 
                 status = "🟢"
 
-                for sentence in split_sentences(text):
+                evidence = get_evidence(
+                    text,
+                    patterns +
+                    rule["duration_patterns"]
+                )
 
-                    if (
-                        sentence_has_patterns(
-                            sentence,
-                            patterns
-                        )
-                        and
-                        sentence_has_patterns(
-                            sentence,
-                            rule["duration_patterns"]
-                        )
-                    ):
-                        evidence = sentence
-                        break
-
-            elif has_retention:
+            elif retention_found:
 
                 status = "🟡"
 
                 evidence = get_evidence(
                     text,
                     patterns
-                )
-
-        # طريقة الجمع
-        elif "strong_patterns" in rule:
-
-            strong_match = any(
-                re.search(
-                    pattern,
-                    text,
-                    re.IGNORECASE
-                )
-                for pattern in rule["strong_patterns"]
-            )
-
-            if strong_match:
-
-                status = "🟢"
-
-                evidence = get_evidence(
-                    text,
-                    rule["strong_patterns"]
                 )
 
             else:
 
-                matches = []
+                status = "🔴"
 
-                for pattern in patterns:
+        # -------------------------
+        # Collection special logic
+        # -------------------------
 
-                    if re.search(
-                        pattern,
-                        text,
-                        re.IGNORECASE
-                    ):
-                        matches.append(pattern)
+        elif name == "توضيح طريقة جمع البيانات":
 
-                if len(set(matches)) >= 2:
-
-                    status = "🟢"
-
-                    evidence = get_evidence(
-                        text,
-                        patterns
-                    )
-
-                elif len(set(matches)) == 1:
-
-                    status = "🟡"
-
-                    evidence = get_evidence(
-                        text,
-                        patterns
-                    )
-
-        # الإفصاح للجهات الأخرى
-        elif rule.get("third_party_only"):
-
-            third_party_patterns = [
-                r"أطراف.*ثالثة",
-                r"طرف.*ثالث",
-                r"مقدمي.*الخدمات",
-                r"مزودي.*الخدمات",
-                r"نماذج.*من.*طرف.*ثالث"
+            strong_collection_patterns = [
+                r"عند إنشاء الحساب",
+                r"عند التسجيل",
+                r"عند الشراء",
+                r"من خلال النماذج",
+                r"يتم جمع.*من خلال",
+                r"نجمع.*عند"
             ]
+
+            strong_found = any(
+                re.search(
+                    p,
+                    text,
+                    re.IGNORECASE
+                )
+                for p in strong_collection_patterns
+            )
+
+            if strong_found:
+
+                status = "🟢"
+
+                evidence = get_evidence(
+                    text,
+                    strong_collection_patterns
+                )
+
+            elif matched_count >= 2:
+
+                status = "🟢"
+
+                evidence = (
+                    matched_sentences[0]
+                    if matched_sentences
+                    else ""
+                )
+
+            elif matched_count == 1:
+
+                status = "🟡"
+
+                evidence = (
+                    matched_sentences[0]
+                    if matched_sentences
+                    else ""
+                )
+
+            else:
+
+                status = "🔴"
+
+        # -------------------------
+        # Disclosure special logic
+        # -------------------------
+
+        elif name == "توضيح الجهات التي قد يتم الإفصاح لها عن البيانات":
+
+            third_party_found = any(
+                re.search(
+                    p,
+                    text,
+                    re.IGNORECASE
+                )
+                for p in rule["third_party_patterns"]
+            )
 
             disclosure_patterns = [
                 r"الإفصاح",
-                r"مشاركة.*البيانات",
-                r"نشارك.*البيانات",
-                r"نُفصح.*عن.*البيانات"
+                r"نفصح",
+                r"مشاركة البيانات",
+                r"نشارك البيانات"
             ]
 
-            has_third_party = any(
+            disclosure_found = any(
                 re.search(
-                    pattern,
+                    p,
                     text,
                     re.IGNORECASE
                 )
-                for pattern in third_party_patterns
+                for p in disclosure_patterns
             )
 
-            has_disclosure = any(
-                re.search(
-                    pattern,
-                    text,
-                    re.IGNORECASE
-                )
-                for pattern in disclosure_patterns
-            )
-
-            if has_disclosure:
+            if disclosure_found and matched_count >= 2:
 
                 status = "🟢"
 
                 evidence = get_evidence(
                     text,
-                    disclosure_patterns
+                    patterns
                 )
 
-            elif has_third_party:
+            elif third_party_found:
 
                 status = "🟡"
 
                 evidence = get_evidence(
                     text,
-                    third_party_patterns
+                    rule["third_party_patterns"]
                 )
 
-        # القواعد العادية
+            elif matched_count == 1:
+
+                status = "🟡"
+
+                evidence = get_evidence(
+                    text,
+                    patterns
+                )
+
+            else:
+
+                status = "🔴"
+
         else:
 
-            matches = []
-
-            for pattern in patterns:
-
-                if re.search(
-                    pattern,
-                    text,
-                    re.IGNORECASE
-                ):
-                    matches.append(pattern)
-
-            unique_matches = len(
-                set(matches)
-            )
-
-            if unique_matches >= 2:
+            if matched_count >= 2:
 
                 status = "🟢"
 
-                evidence = get_evidence(
-                    text,
-                    patterns
+                evidence = (
+                    matched_sentences[0]
+                    if matched_sentences
+                    else ""
                 )
 
-            elif unique_matches == 1:
+            elif matched_count == 1:
 
                 status = "🟡"
 
-                evidence = get_evidence(
-                    text,
-                    patterns
+                evidence = (
+                    matched_sentences[0]
+                    if matched_sentences
+                    else ""
                 )
 
-        results.append({
-            "name": name,
-            "status": status,
-            "evidence": evidence,
-            "recommendation":
-                rule["recommendation"]
-        })
+            else:
+
+                status = "🔴"
+
+        results.append(
+            {
+                "name": name,
+                "status": status,
+                "evidence": evidence,
+                "recommendation":
+                    rule["recommendation"]
+            }
+        )
 
     return results
 
 
-# =========================================================
-# قواعد المتجر
-# =========================================================
+def privacy_score(results):
+
+    total = len(results)
+
+    if total == 0:
+
+        return 0
+
+    points = 0
+
+    for result in results:
+
+        if result["status"] == "🟢":
+
+            points += 1
+
+        elif result["status"] == "🟡":
+
+            points += 0.5
+
+    return round(
+        (points / total) * 100
+    )
+
+
+# =========================
+# Store Rules
+# =========================
 
 STORE_RULES = [
 
-    {
-        "name": "وجود سياسة الخصوصية",
-        "patterns": [
-            r"سياسة الخصوصية",
-            r"الخصوصية",
-            r"privacy policy"
-        ]
-    },
+    "وجود سياسة الخصوصية",
 
-    {
-        "name": "وجود سياسة الاستبدال والاسترجاع واسترداد الأموال",
-        "patterns": [
-            r"الاستبدال",
-            r"الاسترجاع",
-            r"استرداد.*الأموال",
-            r"استرداد.*المبلغ",
-            r"refund",
-            r"return"
-        ]
-    },
+    "وجود سياسة الاستبدال والاسترجاع واسترداد الأموال",
 
-    {
-        "name": "وجود سياسة الشحن والتوصيل",
-        "patterns": [
-            r"الشحن",
-            r"التوصيل",
-            r"التسليم",
-            r"delivery",
-            r"shipping"
-        ]
-    },
+    "وجود سياسة الشحن والتوصيل",
 
-    {
-        "name": "وجود سياسة الشكاوى والمقترحات",
-        "patterns": [
-            r"الشكاوى",
-            r"الشكوى",
-            r"المقترحات",
-            r"خدمة العملاء"
-        ]
-    },
+    "وجود سياسة الشكاوى والمقترحات",
 
-    {
-        "name": "وجود بيانات التواصل",
-        "patterns": [
-            r"تواصل معنا",
-            r"اتصل بنا",
-            r"البريد الإلكتروني",
-            r"رقم الهاتف",
-            r"واتساب",
-            r"contact"
-        ]
-    },
+    "وجود بيانات التواصل",
 
-    {
-        "name": "وجود بيانات المنشأة أو السجل التجاري",
-        "patterns": [
-            r"السجل التجاري",
-            r"سجل تجاري",
-            r"رقم.*السجل",
-            r"بيانات.*المنشأة",
-            r"اسم.*المنشأة"
-        ]
-    },
+    "وجود بيانات المنشأة أو السجل التجاري",
 
-    {
-        "name": "وجود الرقم الضريبي",
-        "patterns": [
-            r"الرقم الضريبي",
-            r"رقم.*ضريبي",
-            r"ضريبة القيمة المضافة",
-            r"VAT"
-        ]
-    }
+    "وجود الرقم الضريبي"
 
 ]
 
@@ -795,14 +756,76 @@ def analyze_store(text):
 
     for rule in STORE_RULES:
 
+        patterns = []
+
+        if rule == "وجود سياسة الخصوصية":
+
+            patterns = [
+                r"سياسة الخصوصية",
+                r"الخصوصية"
+            ]
+
+        elif rule == "وجود سياسة الاستبدال والاسترجاع واسترداد الأموال":
+
+            patterns = [
+                r"الاستبدال",
+                r"الاسترجاع",
+                r"استرداد الأموال",
+                r"استرجاع الأموال"
+            ]
+
+        elif rule == "وجود سياسة الشحن والتوصيل":
+
+            patterns = [
+                r"الشحن",
+                r"التوصيل",
+                r"سياسة الشحن"
+            ]
+
+        elif rule == "وجود سياسة الشكاوى والمقترحات":
+
+            patterns = [
+                r"الشكاوى",
+                r"الشكاوى والمقترحات",
+                r"المقترحات"
+            ]
+
+        elif rule == "وجود بيانات التواصل":
+
+            patterns = [
+                r"تواصل معنا",
+                r"اتصل بنا",
+                r"البريد الإلكتروني",
+                r"رقم الهاتف",
+                r"الهاتف"
+            ]
+
+        elif rule == "وجود بيانات المنشأة أو السجل التجاري":
+
+            patterns = [
+                r"السجل التجاري",
+                r"رقم السجل",
+                r"اسم المنشأة",
+                r"المنشأة"
+            ]
+
+        elif rule == "وجود الرقم الضريبي":
+
+            patterns = [
+                r"الرقم الضريبي",
+                r"رقم ضريبي",
+                r"ضريبة القيمة المضافة",
+                r"VAT"
+            ]
+
         evidence = get_evidence(
             text,
-            rule["patterns"]
+            patterns
         )
 
-        status = "🟢" if evidence else "⚪"
-
         if evidence:
+
+            status = "🟢"
 
             recommendation = (
                 "يظهر في المحتوى مؤشر مرتبط بهذا المتطلب."
@@ -810,55 +833,63 @@ def analyze_store(text):
 
         else:
 
+            status = "⚪"
+
             recommendation = (
                 "لم يظهر في المحتوى المتاح مؤشر واضح لهذا المتطلب، "
                 "ويُفضّل مراجعته والتحقق منه."
             )
 
-        results.append({
-            "name": rule["name"],
-            "status": status,
-            "evidence": evidence,
-            "recommendation": recommendation
-        })
+        results.append(
+            {
+                "name": rule,
+                "status": status,
+                "evidence": evidence,
+                "recommendation": recommendation
+            }
+        )
 
     return results
 
 
-# =========================================================
-# جلب الموقع
-# =========================================================
+def store_score(results):
+
+    if not results:
+
+        return 0
+
+    found = sum(
+        1
+        for result in results
+        if result["status"] == "🟢"
+    )
+
+    return round(
+        (found / len(results)) * 100
+    )
+
+
+# =========================
+# Web Functions
+# =========================
 
 def fetch_page(url):
 
-    try:
+    headers = {
+        "User-Agent":
+            "Mozilla/5.0"
+    }
 
-        headers = {
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 "
-                "(KHTML, like Gecko) "
-                "Chrome/120.0 Safari/537.36"
-        }
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=15
+    )
 
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=15
-        )
+    response.raise_for_status()
 
-        response.raise_for_status()
+    return response.text
 
-        return response.text
-
-    except Exception:
-
-        return ""
-
-
-# =========================================================
-# استخراج بيانات الصفحة
-# =========================================================
 
 def extract_page_data(html):
 
@@ -867,86 +898,86 @@ def extract_page_data(html):
         "html.parser"
     )
 
-    for tag in soup([
-        "script",
-        "style",
-        "noscript",
-        "svg"
-    ]):
-        tag.decompose()
+    for element in soup(
+        ["script", "style", "noscript"]
+    ):
+
+        element.decompose()
 
     text = soup.get_text(
-        separator=" ",
+        " ",
         strip=True
     )
 
     links = []
 
-    for a in soup.find_all(
-        "a",
-        href=True
-    ):
+    for a in soup.find_all("a", href=True):
 
-        title = a.get_text(
-            " ",
-            strip=True
+        links.append(
+            {
+                "text":
+                    a.get_text(
+                        " ",
+                        strip=True
+                    ),
+                "href":
+                    a["href"]
+            }
         )
-
-        href = a.get("href")
-
-        if href:
-
-            links.append({
-                "title": title,
-                "href": href
-            })
 
     return text, links
 
-
-# =========================================================
-# البحث عن سياسة الخصوصية
-# =========================================================
 
 def find_privacy_page(
     base_url,
     links
 ):
 
-    keywords = [
-        "سياسة الخصوصية",
+    privacy_words = [
         "الخصوصية",
+        "سياسة الخصوصية",
         "privacy",
         "privacy-policy"
     ]
 
     for link in links:
 
-        title = normalize_text(
-            link["title"]
+        link_text = (
+            link["text"]
+            or ""
         ).lower()
 
-        href = link["href"].lower()
+        href = (
+            link["href"]
+            or ""
+        ).lower()
 
-        for keyword in keywords:
+        if any(
+            word.lower() in link_text
+            or word.lower() in href
+            for word in privacy_words
+        ):
 
-            if (
-                keyword.lower() in title
-                or
-                keyword.lower() in href
-            ):
+            href = link["href"]
 
-                return urljoin(
-                    base_url,
-                    link["href"]
+            if href.startswith("http"):
+
+                return href
+
+            if href.startswith("/"):
+
+                base = (
+                    base_url.rstrip("/")
                 )
+
+                return base + href
 
     return None
 
 
-# =========================================================
-# عرض النتيجة
-# =========================================================
+# =========================
+# Display Result
+# =========================
 
 def display_result(result):
 
@@ -1003,89 +1034,15 @@ def display_result(result):
     )
 
 
-# =========================================================
-# حساب الدرجات
-# =========================================================
-
-def privacy_score(results):
-
-    if not results:
-        return 0
-
-    points = 0
-
-    for result in results:
-
-        if result["status"] == "🟢":
-            points += 1
-
-        elif result["status"] == "🟡":
-            points += 0.5
-
-    return round(
-        (points / len(results)) * 100
-    )
-
-
-def store_score(results):
-
-    if not results:
-        return 0
-
-    passed = sum(
-        1
-        for result in results
-        if result["status"] == "🟢"
-    )
-
-    return round(
-        (passed / len(results)) * 100
-    )
-
-
-# =========================================================
-# التبويبات
-# =========================================================
-
-if "active_tab" not in st.session_state:
-
-    st.session_state.active_tab = "store"
-
-
-col1, col2 = st.columns(2)
-
-
-with col1:
-
-    if st.button(
-        "🔎 فحص متجر",
-        key="tab_store",
-        use_container_width=True
-    ):
-
-        st.session_state.active_tab = "store"
-
-
-with col2:
-
-    if st.button(
-        "📄 فحص سياسة الخصوصية",
-        key="tab_privacy",
-        use_container_width=True
-    ):
-
-        st.session_state.active_tab = "privacy"
-
-
-# =========================================================
-# فحص المتجر
-# =========================================================
+# =========================
+# STORE TAB
+# =========================
 
 if st.session_state.active_tab == "store":
 
     st.markdown(
         '<div class="section-title">'
-        '🔎 فحص المتجر'
+        '🔎 فحص متجر'
         '</div>',
         unsafe_allow_html=True
     )
@@ -1102,138 +1059,131 @@ if st.session_state.active_tab == "store":
 
         if not store_url:
 
-            st.warning(
-                "أدخل رابط المتجر أولًا."
+            st.error(
+                "فضلاً أدخل رابط المتجر."
             )
 
         else:
 
-            if not store_url.startswith(
-                ("http://", "https://")
-            ):
+            try:
 
-                store_url = (
-                    "https://" +
-                    store_url
-                )
+                with st.spinner(
+                    "جاري فحص المتجر..."
+                ):
 
-            with st.spinner(
-                "جاري فحص المتجر..."
-            ):
-
-                html = fetch_page(
-                    store_url
-                )
-
-            if not html:
-
-                st.error(
-                    "تعذر الوصول إلى المتجر."
-                )
-
-            else:
-
-                store_text, links = extract_page_data(
-                    html
-                )
-
-                privacy_url = find_privacy_page(
-                    store_url,
-                    links
-                )
-
-                store_results = analyze_store(
-                    store_text
-                )
-
-                s_score = store_score(
-                    store_results
-                )
-
-                privacy_results = []
-
-                if privacy_url:
-
-                    privacy_html = fetch_page(
-                        privacy_url
+                    html = fetch_page(
+                        store_url
                     )
 
-                    if privacy_html:
+                    page_text, links = (
+                        extract_page_data(
+                            html
+                        )
+                    )
 
-                        privacy_text, _ = extract_page_data(
-                            privacy_html
+                    privacy_url = (
+                        find_privacy_page(
+                            store_url,
+                            links
+                        )
+                    )
+
+                    privacy_text = ""
+
+                    if privacy_url:
+
+                        try:
+
+                            privacy_html = (
+                                fetch_page(
+                                    privacy_url
+                                )
+                            )
+
+                            privacy_text, _ = (
+                                extract_page_data(
+                                    privacy_html
+                                )
+                            )
+
+                        except Exception:
+
+                            privacy_text = ""
+
+                    store_results = (
+                        analyze_store(
+                            page_text
+                        )
+                    )
+
+                    if privacy_text:
+
+                        privacy_results = (
+                            analyze_privacy(
+                                privacy_text
+                            )
                         )
 
-                        privacy_results = analyze_privacy(
-                            privacy_text
+                    else:
+
+                        privacy_results = (
+                            analyze_privacy(
+                                page_text
+                            )
                         )
 
-                p_score = privacy_score(
-                    privacy_results
-                )
+                    s_score = store_score(
+                        store_results
+                    )
 
-                if privacy_results:
+                    p_score = privacy_score(
+                        privacy_results
+                    )
 
                     overall = round(
-                        (s_score + p_score) / 2
+                        (
+                            s_score +
+                            p_score
+                        ) / 2
                     )
 
-                else:
-
-                    overall = s_score
-
-                st.markdown(
-                    '<div class="section-title">'
-                    '📊 ملخص الفحص'
-                    '</div>',
-                    unsafe_allow_html=True
+                st.success(
+                    "تم الانتهاء من الفحص المبدئي."
                 )
 
-                c1, c2, c3 = st.columns(3)
+                col1, col2, col3 = st.columns(3)
 
-                with c1:
+                with col1:
 
                     st.markdown(
                         f"""
                         <div class="metric-card">
-                            <div class="metric-number">
-                                {overall}%
-                            </div>
-                            <div class="metric-label">
-                                المؤشر العام
-                            </div>
+                        <div>المؤشر العام</div>
+                        <h2>{overall}%</h2>
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
-                with c2:
+                with col2:
 
                     st.markdown(
                         f"""
                         <div class="metric-card">
-                            <div class="metric-number">
-                                {s_score}%
-                            </div>
-                            <div class="metric-label">
-                                فحص المتجر
-                            </div>
+                        <div>فحص المتجر</div>
+                        <h2>{s_score}%</h2>
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
-                with c3:
+                with col3:
 
                     st.markdown(
                         f"""
                         <div class="metric-card">
-                            <div class="metric-number">
-                                {p_score}%
-                            </div>
-                            <div class="metric-label">
-                                فحص الخصوصية
-                            </div>
+                        <div>فحص الخصوصية</div>
+                        <h2>{p_score}%</h2>
                         </div>
                         """,
                         unsafe_allow_html=True
@@ -1241,7 +1191,7 @@ if st.session_state.active_tab == "store":
 
                 st.markdown(
                     '<div class="section-title">'
-                    '🔍 تفاصيل فحص المتجر'
+                    '🏪 نتائج فحص المتجر'
                     '</div>',
                     unsafe_allow_html=True
                 )
@@ -1254,50 +1204,52 @@ if st.session_state.active_tab == "store":
 
                 st.markdown(
                     '<div class="section-title">'
-                    '📄 فحص سياسة الخصوصية'
+                    '📄 نتائج فحص سياسة الخصوصية'
                     '</div>',
                     unsafe_allow_html=True
                 )
 
                 if privacy_url:
 
-                    st.success(
-                        "تم العثور على صفحة سياسة الخصوصية وفحص محتواها."
+                    st.info(
+                        f"تم العثور على صفحة الخصوصية تلقائيًا: {privacy_url}"
                     )
-
-                    st.caption(
-                        f"صفحة الخصوصية المكتشفة: {privacy_url}"
-                    )
-
-                    for result in privacy_results:
-
-                        display_result(
-                            result
-                        )
 
                 else:
 
                     st.warning(
-                        "لم يتم العثور تلقائيًا على صفحة واضحة لسياسة الخصوصية."
+                        "لم يتم العثور على صفحة خصوصية واضحة، "
+                        "وتم الفحص من المحتوى المتاح."
+                    )
+
+                for result in privacy_results:
+
+                    display_result(
+                        result
                     )
 
                 st.markdown(
                     '<div class="section-title">'
-                    '🌐 عناصر تحتاج تحققًا خارجيًا'
+                    '🌐 عناصر تحتاج تحقق خارجي'
                     '</div>',
                     unsafe_allow_html=True
                 )
 
                 st.info(
-                    "بعض المتطلبات لا يمكن التحقق منها من محتوى الموقع فقط، "
-                    "مثل بعض بيانات التسجيل أو المعلومات الرسمية، "
-                    "ولذلك تحتاج إلى تحقق خارجي."
+                    "بعض المتطلبات لا يمكن التحقق منها بالكامل "
+                    "من محتوى الموقع فقط، وقد تحتاج إلى تحقق خارجي."
+                )
+
+            except Exception as e:
+
+                st.error(
+                    f"تعذر إتمام الفحص: {e}"
                 )
 
 
-# =========================================================
-# فحص السياسة يدويًا
-# =========================================================
+# =========================
+# PRIVACY TAB
+# =========================
 
 if st.session_state.active_tab == "privacy":
 
@@ -1308,10 +1260,10 @@ if st.session_state.active_tab == "privacy":
         unsafe_allow_html=True
     )
 
-    privacy_text = st.text_area(
+    privacy_input = st.text_area(
         "الصق نص سياسة الخصوصية هنا",
-        height=400,
-        placeholder="الصق نص سياسة الخصوصية هنا..."
+        height=300,
+        placeholder="ألصق نص سياسة الخصوصية..."
     )
 
     if st.button(
@@ -1319,108 +1271,85 @@ if st.session_state.active_tab == "privacy":
         use_container_width=True
     ):
 
-        if not privacy_text.strip():
+        if not privacy_input.strip():
 
-            st.warning(
-                "الصق نص سياسة الخصوصية أولًا."
+            st.error(
+                "فضلاً أضف نص سياسة الخصوصية."
             )
 
         else:
 
             results = analyze_privacy(
-                privacy_text
+                privacy_input
             )
 
             score = privacy_score(
                 results
             )
 
-            clear = sum(
+            green = sum(
                 1
-                for result in results
-                if result["status"] == "🟢"
+                for r in results
+                if r["status"] == "🟢"
             )
 
-            review = sum(
+            yellow = sum(
                 1
-                for result in results
-                if result["status"] == "🟡"
+                for r in results
+                if r["status"] == "🟡"
             )
 
-            missing = sum(
+            red = sum(
                 1
-                for result in results
-                if result["status"] == "🔴"
+                for r in results
+                if r["status"] == "🔴"
             )
 
-            st.markdown(
-                '<div class="section-title">'
-                '📊 ملخص الفحص'
-                '</div>',
-                unsafe_allow_html=True
-            )
+            col1, col2, col3, col4 = st.columns(4)
 
-            c1, c2, c3, c4 = st.columns(4)
-
-            with c1:
+            with col1:
 
                 st.markdown(
                     f"""
                     <div class="metric-card">
-                        <div class="metric-number">
-                            {score}%
-                        </div>
-                        <div class="metric-label">
-                            المؤشر
-                        </div>
+                    <div>المؤشر</div>
+                    <h2>{score}%</h2>
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
 
-            with c2:
+            with col2:
 
                 st.markdown(
                     f"""
                     <div class="metric-card">
-                        <div class="metric-number">
-                            {clear}
-                        </div>
-                        <div class="metric-label">
-                            مؤشرات واضحة
-                        </div>
+                    <div>مؤشرات واضحة</div>
+                    <h2>{green}</h2>
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
 
-            with c3:
+            with col3:
 
                 st.markdown(
                     f"""
                     <div class="metric-card">
-                        <div class="metric-number">
-                            {review}
-                        </div>
-                        <div class="metric-label">
-                            تحتاج مراجعة
-                        </div>
+                    <div>تحتاج مراجعة</div>
+                    <h2>{yellow}</h2>
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
 
-            with c4:
+            with col4:
 
                 st.markdown(
                     f"""
                     <div class="metric-card">
-                        <div class="metric-number">
-                            {missing}
-                        </div>
-                        <div class="metric-label">
-                            لم يتم العثور عليها
-                        </div>
+                    <div>لم يتم العثور عليها</div>
+                    <h2>{red}</h2>
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -1428,7 +1357,7 @@ if st.session_state.active_tab == "privacy":
 
             st.markdown(
                 '<div class="section-title">'
-                '🔍 تفاصيل الفحص'
+                '📋 تفاصيل الفحص'
                 '</div>',
                 unsafe_allow_html=True
             )
@@ -1440,14 +1369,16 @@ if st.session_state.active_tab == "privacy":
                 )
 
 
-# =========================================================
-# التذييل
-# =========================================================
+# =========================
+# Footer
+# =========================
 
-st.markdown("""
-<div class="footer">
-    ⚖️ ميثاق | Methaq
-    <br>
-    نموذج أولي تجريبي - LegalTech
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    """
+    <div class="footer">
+        ⚖️ ميثاق | Methaq<br>
+        نموذج أولي تجريبي - LegalTech
+    </div>
+    """,
+    unsafe_allow_html=True
+)
