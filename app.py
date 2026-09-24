@@ -69,7 +69,6 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {
 .hero-text {
     color: #cccccc !important;
     font-size: 16px;
-    line-height: 1.8;
 }
 
 .metric-card {
